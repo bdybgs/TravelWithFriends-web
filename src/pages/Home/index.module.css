@@ -1,0 +1,30 @@
+.primary {
+    font-family: Inter, sans-serif;
+    color: white;
+    display: flex; /* Используем Flexbox для расположения элементов */
+    align-items: center; /* Выравниваем элементы по вертикали */
+    margin-top: -20px;
+}
+.primary h1 {
+    margin-top: -40px; /* Уменьшаем отступ сверху только для текста */
+}
+
+
+body {
+    background-color: #313131;
+}
+
+
+.yellow {
+    color: #FFEF5C;
+}
+.blue {
+    color: #505CCA;
+}
+.picture {
+    width: 600px; /* Устанавливаем ширину логотипа */
+    height: auto; /* Автоматически определяем высоту (сохраняя пропорции) */
+    margin-right: auto;
+    margin-left: 67px   ;
+}
+

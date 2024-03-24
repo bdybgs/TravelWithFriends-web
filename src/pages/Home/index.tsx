@@ -1,25 +1,19 @@
-import React, {useEffect, useState} from 'react';
-import YandexMap from "../../components/YandexMap";
-import {TPoint} from "../../types/TPoint";
-import {set} from "@pbe/react-yandex-maps/typings/util/set";
+import React from "react";
+import styles from "./index.module.css"
+import homePic from "./homePic.png";
+
 
 const Home = () => {
-    const [points, setPoints] = useState<TPoint[]>([]);
-
-    useEffect(() => {
-       // const fetchPoints = fetch(apiUrl);
-        // Точки придут из вашего бекенда и тут ты их получишь и присвоишь в points
-        //    setPoints(fetchPoints);
-        setTimeout(() => {
-            setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, {x: 54.32    , y: 36.16}]);
-        }, 2000);
-    });
-
     return (
-        <>
-            <YandexMap points={points}/>
-        </>
-    );
-};
 
+        <div className={styles.primary}>
+            <img src={homePic} alt="Логотип" className={styles.picture}/>
+            <h1  style={{ fontSize: "50px" }}><span className={styles.yellow}>Путеводитель</span> в мире веселья и экономии!
+                <span className={styles.blue}>Путешествуйте</span> с друзьями без лишних забот</h1>
+
+        </div>
+    )
+
+
+}
 export default Home;

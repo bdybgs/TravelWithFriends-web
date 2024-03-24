@@ -1,0 +1,33 @@
+.primary {
+    font-family: Inter, sans-serif;
+    display: flex; /* Используем Flexbox для расположения элементов */
+    align-items: center; /* Выравниваем элементы по вертикали */
+}
+
+.primary nav ul {
+    list-style-type: none;
+    padding: 0;
+    margin-left: 590px;
+}
+
+.primary nav ul a {
+    text-decoration: none; /* Убираем подчеркивание ссылок */
+    color: white; /* Цвет текста ссылок */
+    padding: 10px 20px; /* Внутренние отступы ссылок */
+    margin-right: 50px; /* Внешние отступы между ссылками */
+    border-radius: 5px; /* Закругляем углы */
+    font-size: 20px;
+
+}
+
+.primary nav ul a:hover {
+    background-color: #555; /* Изменяем цвет фона при наведении на ссылку */
+}
+.logo {
+    width: 100px; /* Устанавливаем ширину логотипа */
+    height: auto; /* Автоматически определяем высоту (сохраняя пропорции) */
+    margin-right: auto;
+    margin-left: 67px   ;
+}
+
+
