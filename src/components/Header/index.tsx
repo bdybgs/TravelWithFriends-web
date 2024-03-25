@@ -1,18 +1,20 @@
 import React from "react";
 import styles from "./index.module.css"
 import logo from "./logo.webp";
+import { Link } from "react-router-dom"
+
 
 const Header = () => {
     return (
         <header className={styles.primary}>
-            <a href="/">
+            <Link to="/">
             <img src={logo} alt="Логотип" className={styles.logo} />
-            </a>
+            </Link>
             <nav>
                 <ul>
-                    <a href="/" >Главная</a>
-                   <a href="/contacts">Контакты</a>
-                    <a href="/about">О нас</a>
+                    <Link to="/" >Главная</Link>
+                   <Link to="/contacts">Контакты</Link>
+                    <Link to="/about">О нас</Link>
                 </ul>
             </nav>
         </header>
