@@ -1,0 +1,55 @@
+.container {
+    border-radius: 35px;
+    background-color: #D9D9D9;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px; /* Установка максимальной ширины */
+    height: 500px;
+    margin: auto; /* Центрирование по горизонтали */
+    margin-top: 100px;
+    font-family: Inter, sans-serif;
+}
+.input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 10px; /* Закругляем углы */
+    border: 1px solid #ccc; /* Добавляем рамку */
+    box-sizing: border-box; /* Учитываем размеры рамки в общей ширине */
+}
+
+.button {
+    width: 100%;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 10px; /* Закругляем углы */
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.enter {
+    margin-bottom: 0px; /* Поднимаем текст на 50px */
+    font-size: 25px;
+}
+
+
+.button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #D9D9D9;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: #0056b3;
+}
+
+.picture{
+    width: 100px; /* Устанавливаем ширину логотипа */
+    height: 100px; /* Автоматически определяем высоту (сохраняя пропорции) */
+}

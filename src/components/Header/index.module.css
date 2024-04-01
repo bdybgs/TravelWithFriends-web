@@ -2,6 +2,8 @@
     font-family: Inter, sans-serif;
     display: flex; /* Используем Flexbox для расположения элементов */
     align-items: center; /* Выравниваем элементы по вертикали */
+    background-color: #1E1E1E;
+    height: 80px;
 }
 
 .primary nav ul {
@@ -28,6 +30,7 @@
     height: auto; /* Автоматически определяем высоту (сохраняя пропорции) */
     margin-right: auto;
     margin-left: 67px   ;
+    filter: invert(1);
 }
 
 

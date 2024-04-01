@@ -3,10 +3,12 @@
     color: white;
     display: flex; /* Используем Flexbox для расположения элементов */
     align-items: center; /* Выравниваем элементы по вертикали */
-    margin-top: -20px;
+    margin-top: 20px;
+
 }
 .primary h1 {
-    margin-top: -40px; /* Уменьшаем отступ сверху только для текста */
+    margin-top: -100px; /* Уменьшаем отступ сверху только для текста */
+    margin-left: 50px;
 }
 
 
@@ -22,9 +24,32 @@ body {
     color: #505CCA;
 }
 .picture {
-    width: 600px; /* Устанавливаем ширину логотипа */
+    width: 640px; /* Устанавливаем ширину логотипа */
     height: auto; /* Автоматически определяем высоту (сохраняя пропорции) */
     margin-right: auto;
-    margin-left: 67px   ;
+    margin-left: 6px   ;
 }
+
+.roundedLink {
+    font-family: Inter, sans-serif;
+    font-size: 30px;
+    font-weight: bold; /* Делаем текст толще */
+    display: inline-block;
+    padding: 20px 60px;
+    background-color: #2A36A1;
+    color: #fff;
+    border-radius: 40px; /* Устанавливаем радиус скругления */
+    text-decoration: none; /* Убираем подчеркивание ссылки */
+    margin-bottom: 20px;
+}
+.linkWrapper {
+    margin-top: -160px; /* Размещаем контейнер ссылки внизу блока */
+    margin-left: 700px;
+}
+
+.roundedLink:hover {
+    background-color: #0056b3; /* Изменяем цвет фона при наведении */
+}
+
+
 

@@ -1,7 +1,7 @@
-import {useLocation, Navigate} from "react-router-dom";
-import React, {ReactNode} from "react";
+import { useLocation, Navigate } from "react-router-dom";
+import React, { ReactNode } from "react";
 
-const RequireAuth = ({children} : { children: ReactNode}) => {
+const RequireAuth = ({ children }: { children: ReactNode }) => {
     const location = useLocation();
     const auth = false;
 
@@ -9,7 +9,7 @@ const RequireAuth = ({children} : { children: ReactNode}) => {
         return <Navigate to="/login" />;
     }
 
-    return children
+    return <>{children}</>;
 }
 
-export {RequireAuth};
+export { RequireAuth };

@@ -1,27 +1,34 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import './App.css';
 import Map from "./pages/Map";
 import Home from "./pages/Home"
 import Contacts from "./pages/Contacts"
 import Header from "./components/Header";
+import { Login } from "./pages/Login";
+import { RequireAuth } from "./hoc/RequireAuth";
+import { Routes, Route, useLocation } from "react-router-dom"
+import {AuthProvider} from "./hoc/AuthProvider";
+import SignInComponent from "./pages/Registration";
 
-import { Routes, Route, Link } from "react-router-dom"
-
-// TODO: Нужно изучить:
-// React Router, React hooks, Axios, js-cookie
 
 function App() {
-  return (
-<>
-<Header/>
-      <Routes>
-          <Route path="/" element={<Home />}/>
-          <Route path="/contacts" element={<Contacts />}/>
+    const location = useLocation();
+    const showHeader = !['/login'].includes(location.pathname);
 
-      </Routes>
-</>
-  );
+
+
+    return (
+        <div>
+            {showHeader && <Header />}
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/contacts" element={<Contacts />} />
+                <Route path="/map" element={<RequireAuth><Map /></RequireAuth>} />
+                <Route path="/login" element={<Login />} />
+
+            </Routes>
+        </div>
+    );
 }
 
 export default App;

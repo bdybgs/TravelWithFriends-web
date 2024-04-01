@@ -4,15 +4,29 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from "react-router-dom"
+import AuthProvider from "react-auth-kit";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+interface Store {
+    // Здесь могут быть свойства, специфичные для вашего хранилища аутентификации
+    tokenObject: any;
+}
+
+const store: Store = {
+    // Здесь можете указать свойства вашего хранилища
+    tokenObject: null,
+};
+
 root.render(
   <React.StrictMode>
+      <AuthProvider store={store}>
       <BrowserRouter>
     <App />
       </BrowserRouter>
+    </AuthProvider>
   </React.StrictMode>
 );
 
