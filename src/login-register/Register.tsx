@@ -4,19 +4,21 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import IUser from "../types/user.type";
 import { register } from "../services/auth.service";
+import styles from "../pages/Login/index.module.css";
+
 
 const Register: React.FC = () => {
   const [successful, setSuccessful] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
 
   const initialValues: IUser = {
-    username: "",
+    name: "",
     email: "",
     password: "",
   };
 
   const validationSchema = Yup.object().shape({
-    username: Yup.string()
+    name: Yup.string()
       .test(
         "len",
         "The username must be between 3 and 20 characters.",
@@ -42,9 +44,9 @@ const Register: React.FC = () => {
   });
 
   const handleRegister = (formValue: IUser) => {
-    const { username, email, password } = formValue;
+    const { name, email, password } = formValue;
 
-    register(username, email, password).then(
+    register(name, email, password).then(
       (response) => {
         setMessage(response.data.message);
         setSuccessful(true);
@@ -80,10 +82,10 @@ const Register: React.FC = () => {
             {!successful && (
               <div>
                 <div className="form-group">
-                  <label htmlFor="username"> Username </label>
-                  <Field name="username" type="text" className="form-control" />
+                  <label htmlFor="name"> Username </label>
+                  <Field name="name" type="text" className="form-control" />
                   <ErrorMessage
-                    name="username"
+                    name="name"
                     component="div"
                     className="alert alert-danger"
                   />

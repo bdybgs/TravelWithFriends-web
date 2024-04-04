@@ -4,6 +4,9 @@ import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import { login } from "../services/auth.service";
+import styles from "../pages/Login/index.module.css";
+
+
 
 type Props = {}
 
@@ -14,25 +17,25 @@ const Login: React.FC<Props> = () => {
   const [message, setMessage] = useState<string>("");
 
   const initialValues: {
-    username: string;
+    name: string;
     password: string;
   } = {
-    username: "",
+    name: "",
     password: "",
   };
 
   const validationSchema = Yup.object().shape({
-    username: Yup.string().required("This field is required!"),
+    name: Yup.string().required("This field is required!"),
     password: Yup.string().required("This field is required!"),
   });
 
-  const handleLogin = (formValue: { username: string; password: string }) => {
-    const { username, password } = formValue;
+  const handleLogin = (formValue: { name: string; password: string }) => {
+    const { name, password } = formValue;
 
     setMessage("");
     setLoading(true);
 
-    login(username, password).then(
+    login(name, password).then(
       () => {
         navigate("/profile");
         window.location.reload();
@@ -52,13 +55,14 @@ const Login: React.FC<Props> = () => {
   };
 
   return (
+      <div className={styles.container}>
     <div className="col-md-12">
       <div className="card card-container">
-        <img
-          src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
-          alt="profile-img"
-          className="profile-img-card"
-        />
+        {/*<img*/}
+        {/*  src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"*/}
+        {/*  alt="profile-img"*/}
+        {/*  className="profile-img-card"*/}
+        {/*/>*/}
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -66,8 +70,8 @@ const Login: React.FC<Props> = () => {
         >
           <Form>
             <div className="form-group">
-              <label htmlFor="username">Username</label>
-              <Field name="username" type="text" className="form-control" />
+              <label htmlFor="name">Username</label>
+              <Field name="name" type="text" className="form-control" />
               <ErrorMessage
                 name="username"
                 component="div"
@@ -105,6 +109,7 @@ const Login: React.FC<Props> = () => {
         </Formik>
       </div>
     </div>
+  </div>
   );
 };
 
