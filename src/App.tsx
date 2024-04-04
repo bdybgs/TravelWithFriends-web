@@ -15,8 +15,8 @@ import RegistrationPage from "./pages/Registration";
 import * as AuthService from "./services/auth.service";
 import IUser from './types/user.type';
 
-import Login from "./components/Login";
-import Register from "./components/Register";
+import Login from "./login-register/Login";
+import Register from "./login-register/Register";
 //import Home from "./components/Home";
 import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";

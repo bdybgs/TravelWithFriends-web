@@ -1,19 +1,19 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/auth/";
+const API_URL = "http://localhost:10000/v1/Auth";
 
-export const register = (username: string, email: string, password: string) => {
-  return axios.post(API_URL + "signup", {
-    username,
+export const register = (name: string, email: string, password: string) => {
+  return axios.post(API_URL, {
+    username: name,
     email,
     password,
   });
 };
 
-export const login = (username: string, password: string) => {
+export const login = (name: string, password: string) => {
   return axios
-    .post(API_URL + "signin", {
-      username,
+    .post(API_URL, {
+      username: name,
       password,
     })
     .then((response) => {
