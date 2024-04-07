@@ -16,8 +16,6 @@ const Login = () => {
             <div className={styles.container}>
                 <img src={logo} alt="Логотип" className={styles.picture}/>
                 <h1 className={styles.enter}>Войти в аккаунт</h1>
-                <input type="email" placeholder="Email" className={styles.input} />
-                <input type="password" placeholder="Пароль" className={styles.input} />
                 <button className={styles.button}>Войти</button>
             {fromPage}
             </div>

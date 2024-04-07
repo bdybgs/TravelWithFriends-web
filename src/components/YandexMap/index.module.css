@@ -3,7 +3,10 @@
     height: 100% !important;
 }
 .wrapper {
-    width: 100%;
+    /*margin-top: 20px;*/
+    /*margin-left: 10px;*/
+    border-radius: 10px;
+    width: 50%;
     height: calc(100vh - 104px);
 }
 .wrapper div {

@@ -5,6 +5,8 @@ import Map from "./pages/Map";
 import Home from "./pages/Home"
 import Contacts from "./pages/Contacts"
 import Header from "./components/Header";
+import About from "./pages/About";
+
 //import { Login } from "./pages/Login";
 import { RequireAuth } from "./hoc/RequireAuth";
 import { Routes, Route, useLocation, Link } from "react-router-dom"
@@ -17,6 +19,7 @@ import IUser from './types/user.type';
 
 import Login from "./login-register/Login";
 import Register from "./login-register/Register";
+
 //import Home from "./components/Home";
 import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
@@ -59,6 +62,7 @@ const App: React.FC = () => {
         <div>
             { <Header />}
             <Routes>
+                <Route path="/about" element={<About />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/map" element={<RequireAuth><Map /></RequireAuth>} />
