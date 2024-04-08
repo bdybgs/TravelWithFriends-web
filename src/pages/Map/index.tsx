@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import YandexMap from "../../components/YandexMap";
 import {TPoint} from "../../types/TPoint";
 import {set} from "@pbe/react-yandex-maps/typings/util/set";
+import styles from "./index.module.css";
 
 const Map = () => {
     const [points, setPoints] = useState<TPoint[]>([]);
@@ -16,9 +17,15 @@ const Map = () => {
     });
 
     return (
-        <>
-            <YandexMap points={points}/>
-        </>
+        <div className={styles.container}>
+            <div className={styles.mapContainer}>
+                <YandexMap points={points}/>
+            </div>
+            <div className={styles.block}>
+                <h1>AAAAAAAAAAAAAAAAAAAAA</h1>
+                {/* Ваш блок с содержимым */}
+            </div>
+        </div>
     );
 };
 

@@ -1,8 +1,10 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:10000/v1/Auth";
+const API_URL = "http://localhost:10000/v1/Accounts";
+const API_URL_LOGIN = "http://localhost:10000/v1/Auth";
 
 export const register = (name: string, email: string, password: string) => {
+
   return axios.post(API_URL, {
     username: name,
     email,
@@ -12,7 +14,7 @@ export const register = (name: string, email: string, password: string) => {
 
 export const login = (name: string, password: string) => {
   return axios
-    .post(API_URL, {
+    .post(API_URL_LOGIN, {
       username: name,
       password,
     })

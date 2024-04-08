@@ -1,6 +1,6 @@
 export default interface IUser {
   id?: any | null,
-  name: string,
+  username: string,
   email: string,
   password: string,
   roles?: Array<string>

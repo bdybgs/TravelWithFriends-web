@@ -5,6 +5,7 @@ import * as Yup from "yup";
 
 import { login } from "../services/auth.service";
 import styles from "../pages/Login/index.module.css";
+import logo from "../pages/Login/logo.webp";
 
 
 
@@ -58,11 +59,7 @@ const Login: React.FC<Props> = () => {
       <div className={styles.container}>
     <div className="col-md-12">
       <div className="card card-container">
-        {/*<img*/}
-        {/*  src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"*/}
-        {/*  alt="profile-img"*/}
-        {/*  className="profile-img-card"*/}
-        {/*/>*/}
+        <img src={logo} alt="Логотип" className={styles.picture}/>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -70,8 +67,8 @@ const Login: React.FC<Props> = () => {
         >
           <Form>
             <div className="form-group">
-              <label htmlFor="name">Username</label>
-              <Field name="name" type="text" className="form-control" />
+              <Field name="name" type="text" className={`${styles.inputField} form-control`}
+                     placeholder="Username" />
               <ErrorMessage
                 name="username"
                 component="div"
@@ -80,8 +77,8 @@ const Login: React.FC<Props> = () => {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <Field name="password" type="password" className="form-control" />
+              <Field name="password" type="password" className={`${styles.inputField} form-control`}
+                     placeholder="Password" />
               <ErrorMessage
                 name="password"
                 component="div"
@@ -89,8 +86,10 @@ const Login: React.FC<Props> = () => {
               />
             </div>
 
+
             <div className="form-group">
-              <button type="submit" className="btn btn-primary btn-block" disabled={loading}>
+              <button type="submit" className={`${styles.button} btn btn-primary btn-block`}
+                      disabled={loading}>
                 {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
