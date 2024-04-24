@@ -6,8 +6,8 @@
     /*margin-top: 20px;*/
     /*margin-left: 10px;*/
     border-radius: 10px;
-    width: 50%;
-    height: calc(100vh - 104px);
+    width: 90%;
+    height: calc( 100vh - 104px);
 }
 .wrapper div {
     width: 100% !important;

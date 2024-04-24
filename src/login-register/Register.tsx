@@ -1,10 +1,9 @@
-import React, {useState} from "react";
-import {Formik, Field, Form, ErrorMessage} from "formik";
+import React, { useState } from "react";
+import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import styles from "../pages/Login/index.module.css"
-
+import styles from "../pages/Login/index.module.css";
 import IUser from "../types/user.type";
-import {register} from "../services/auth.service";
+import { register } from "../services/auth.service"; // Импортируем функцию register из auth.service.ts
 import logo from "../pages/Login/logo.webp";
 
 const Register: React.FC = () => {
@@ -12,13 +11,13 @@ const Register: React.FC = () => {
     const [message, setMessage] = useState<string>("");
 
     const initialValues: IUser = {
-        username: "",
-        email: "",
-        password: "",
+        name: '',
+        email: '',
+        password: '',
     };
 
     const validationSchema = Yup.object().shape({
-        username: Yup.string()
+        name: Yup.string()
             .test(
                 "len",
                 "The username must be between 3 and 20 characters.",
@@ -44,9 +43,9 @@ const Register: React.FC = () => {
     });
 
     const handleRegister = (formValue: IUser) => {
-        const {username, email, password} = formValue;
+        const { name, email, password } = formValue;
 
-        register(username, email, password).then(
+        register(name, email, password).then( // Вызываем функцию register из auth.service.ts
             (response) => {
                 setMessage(response.data.message);
                 setSuccessful(true);
@@ -79,10 +78,10 @@ const Register: React.FC = () => {
                             {!successful && (
                                 <div>
                                     <div className="form-group">
-                                        <label htmlFor="username"> Username </label>
-                                        <Field name="username" type="text" className="inputField"/>
+                                        <label htmlFor="name"> Username </label>
+                                        <Field name="name" type="text" className="inputField"/>
                                         <ErrorMessage
-                                            name="username"
+                                            name="name"
                                             component="div"
                                             className="alert alert-danger"
                                         />
@@ -121,7 +120,6 @@ const Register: React.FC = () => {
                             )}
 
                             {message && (
-
                                 <div className="form-group">
                                     <div
                                         className={
