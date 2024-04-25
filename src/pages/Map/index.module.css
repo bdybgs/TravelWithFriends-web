@@ -1,24 +1,59 @@
 .container {
     display: flex;
-    align-items: flex-start; /* Выравнивание по верхнему краю */
+    justify-content: center; /* Выравнивание по центру */
+    align-items: center; /* Выравнивание по центру */
+    height: 100vh; /* Высота контейнера на всю высоту видимой области */
+    font-family: Inter, sans-serif;
+}
+
+.block {
+    position: relative; /* Добавляем позиционирование */
+    display: grid;
+    grid-template-rows: max-content auto max-content;
+    gap: 8px;               
+    border-radius: 10px;
+    background-color: #222831;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: calc(100vh - 104px);
+    width: 50%; /* Установка максимальной ширины */
+    font-family: Inter, sans-serif;
+    color: white;
+}
+
+.textdata {
+    color: #B9B9B9;
+    margin-left: 40%;
+    z-index: 1;
+}
+
+.datePicker {
+    top: 25%; /* Располагаем по верхнему краю */
+    right: 10%; /* Располагаем по правому краю */
+    z-index: 1;
 }
 
 .mapContainer {
     flex: 1; /* Растягиваем контейнер с картой на всю доступную ширину */
 }
 
-.block {
-    border-radius: 35px;
-    background-color: #222831;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    max-width: 370px; /* Установка максимальной ширины */
-    height: 500px;
-    margin-left: 20px; /* Добавляем небольшой отступ между картой и блоком */
-
-    font-family: Inter, sans-serif;
-    color: white;
+.tableContainer {
+    overflow-y: auto;
+    height: 100%;
+    margin-left: 15%;
 }
 
-.naming-column {
+.table {
+    width: 80%; /* Ширина таблицы на всю доступную ширину */
+    z-index: 1;
+}
 
+.buttonsContainer {
+    margin-left: 35%;
+    position: relative;
+}
+
+
+
+.tablebutton {
+    margin-left: 30%;
 }
