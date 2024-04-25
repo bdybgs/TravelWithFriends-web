@@ -29,12 +29,20 @@ import BoardAdmin from "./components/BoardAdmin";
 import EventBus from "./common/EventBus";
 
 const App: React.FC = () => {
+    const [showHeader, setShowHeader] = useState<boolean>(true);
     const [showModeratorBoard, setShowModeratorBoard] = useState<boolean>(false);
     const [showAdminBoard, setShowAdminBoard] = useState<boolean>(false);
     const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined);
 
     useEffect(() => {
         const user = AuthService.getCurrentUser();
+
+        const currentPath = window.location.pathname;
+        if (currentPath === '/login' || currentPath === '/registration') {
+            setShowHeader(false);
+        } else {
+            setShowHeader(true);
+        }
 
         if (user) {
             setCurrentUser(user);
@@ -60,7 +68,7 @@ const App: React.FC = () => {
 
     return (
         <div>
-            { <Header />}
+            {showHeader && <Header />}
             <Routes>
                 <Route path="/about" element={<About />} />
                 <Route path="/" element={<Home />} />

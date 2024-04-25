@@ -1,0 +1,6 @@
+.ant-picker-input {
+    /*color: #ff0000 !important; !* Новый цвет текста для ввода *!*/
+}
+.custom-date-picker-container .ant-picker{
+    background-color: #ff0000; /* Новый цвет фона */
+}
