@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const Home = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
     const [isBackgroundGreen, setIsBackgroundGreen] = useState(false);
-    const scrollThreshold = 400; // Уровень прокрутки, после которого меняется цвет фона
+    const scrollThreshold = 400; // Уpовень прокрутки, после которого меняется цвет фона
     const transitionDuration = 0.5; // Продолжительность перехода цвета фона
 
     useEffect(() => {
