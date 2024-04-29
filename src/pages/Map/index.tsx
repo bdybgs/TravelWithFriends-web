@@ -6,8 +6,19 @@ import './customDatePicker.css';
 import styles from "./index.module.css";
 
 import { sendEvent } from "../../utils/Metriks";
-
+import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
 const {RangePicker} = DatePicker;
+document.addEventListener('scroll', function() {
+    var scrollPosition = window.scrollY;
+    var windowHeight = window.innerHeight;
+    var documentHeight = document.body.clientHeight;
+
+    if (scrollPosition + windowHeight >= documentHeight) {
+        document.body.classList.add('scroll-bottom');
+    } else {
+        document.body.classList.remove('scroll-bottom');
+    }
+});
 
 const Map = () => {
     const [points, setPoints] = useState<TPoint[]>([]);
@@ -48,14 +59,42 @@ const Map = () => {
 
     const handleClickStatistic = () => {       
         sendEvent('reachGoal', 'StatisticButtonClick');
+        const fullWidthContainer = document.querySelector('.fullWidthContainer');
+    
+        const statisticElement = document.getElementById('statisticElement');
+
+        // Если элемент найден, прокручиваем страницу до него
+        if (statisticElement) {
+            statisticElement.scrollIntoView({ behavior: 'smooth' });
+        }
     };
+
+    // Данные для диаграммы "Расходы по команде"
+    const teamExpensesData = [
+        { name: 'Вася', value: 10000 },
+        { name: 'Петя', value: 7000 },
+        { name: 'Дима', value: 3000 },
+    ];
+
+    // Данные для диаграммы "Расходы по категориям"
+    const categoryExpensesData = [
+        { name: 'Жилье', value: 10000 },
+        { name: 'Еда', value: 5000 },
+        { name: 'Экскурсия', value: 3000 },
+        { name: 'Прочее', value: 2000 },
+    ];
+
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
     return (
         <div className={styles.container}>
+
+            
+
             <div className={styles.mapContainer}>
                 <YandexMap points={points}/>
             </div>
-            <div className={styles.block} ref={blockRef}>
+            <div className={styles.block}>
                 <div>
                     <div className={styles.textdata}>Дата</div>
                     <div className={styles.datePicker}>
@@ -65,43 +104,91 @@ const Map = () => {
                 <div className={styles.tableContainer}>
                     <table className={styles.table} id="table">
                         <thead>
-                        <tr>
-                            <th>Действие</th>
-                            <th>Участники</th>
-                            <th>Кто оплачивал</th>
-                            <th>Стоимость за одного</th>
-                            <th>Итоговая стоимость</th>
-                        </tr>
+                            <tr>
+                                <th>Действие</th>
+                                <th>Участники</th>
+                                <th>Оплачивал</th>
+                                <th>За одного</th>
+                                <th>Итог</th>
+                            </tr>
                         </thead>
                         <tbody>
-                        {expenses.map((expense, index) => (
-                            <tr key={index}>
-                                <td><Input value={expense.action}
-                                           onChange={(e) => handleExpenseChange(index, 'action', e.target.value)}/></td>
-                                <td><Input value={expense.participants}
-                                           onChange={(e) => handleExpenseChange(index, 'participants', e.target.value)}/>
-                                </td>
-                                <td><Input value={expense.payer}
-                                           onChange={(e) => handleExpenseChange(index, 'payer', e.target.value)}/></td>
-                                <td><Input type="number" value={expense.costPerPerson}
-                                           onChange={(e) => handleExpenseChange(index, 'costPerPerson', e.target.value)}/>
-                                </td>
-                                <td><Input type="number" value={expense.totalCost}
-                                           onChange={(e) => handleExpenseChange(index, 'totalCost', e.target.value)}/>
-                                </td>
-                            </tr>
-                        ))}
+                            {expenses.map((expense, index) => (
+                                <tr key={index}>
+                                    <td><Input value={expense.action} onChange={(e) => handleExpenseChange(index, 'action', e.target.value)}/></td>
+                                    <td><Input value={expense.participants} onChange={(e) => handleExpenseChange(index, 'participants', e.target.value)}/></td>
+                                    <td><Input value={expense.payer} onChange={(e) => handleExpenseChange(index, 'payer', e.target.value)}/></td>
+                                    <td><Input type="number" value={expense.costPerPerson} onChange={(e) => handleExpenseChange(index, 'costPerPerson', e.target.value)}/></td>
+                                    <td><Input type="number" value={expense.totalCost} onChange={(e) => handleExpenseChange(index, 'totalCost', e.target.value)}/></td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                     <Button onClick={addExpense} className={styles.tablebutton}>Добавить трату</Button>
                 </div>
                 <div className={styles.buttonsContainer}>
                     <Button type="primary" style={{backgroundColor: '#00B58A'}}>Сохранить</Button>
-                    <Button type="primary" style={{backgroundColor: '#00A9B4', marginLeft: '10px'}} onClick={handleClickStatistic} >Статистика</Button>
+                    <Button type="primary" style={{backgroundColor: '#00A9B4', marginLeft: '10px'}} onClick={handleClickStatistic}>Статистика</Button>
                 </div>
             </div>
+            
+                <div id="statisticElement" className={styles.fullWidthContainer}>
+                <>
+                    <div className={styles.fullWidthContent}>
+                    <div className={styles.chartContainer}>
+                    <div>
+                        <h3>Расходы по команде</h3>
+                        <PieChart width={400} height={400}>
+                            <Pie dataKey="value" isAnimationActive={false} data={teamExpensesData} cx={200} cy={200} outerRadius={80} fill="#8884d8" label>
+                                {teamExpensesData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Legend />
+                            <Tooltip />
+                        </PieChart>
+                    </div>
+                    <div className={styles.legendContainer}>
+                        {teamExpensesData.map((entry, index) => (
+                            <div key={`legend-${index}`}>
+                                <span className={styles.legendColor} style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
+                                <span>{entry.name}: {entry.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                <div className={styles.chartContainer}>
+                    <div>
+                        <h3>Расходы по категориям</h3>
+                        <PieChart width={400} height={400}>
+                            <Pie dataKey="value" isAnimationActive={false} data={categoryExpensesData} cx={200} cy={200} outerRadius={80} fill="#8884d8" label>
+                                {categoryExpensesData.map((entry, index) => (
+                                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                ))}
+                            </Pie>
+                            <Legend />
+                            <Tooltip />
+                        </PieChart>
+                    </div>
+                    <div className={styles.legendContainer}>
+                        {categoryExpensesData.map((entry, index) => (
+                            <div key={`legend-${index}`}>
+                                <span className={styles.legendColor} style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
+                                <span>{entry.name}: {entry.value}</span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+                </div>
+                </>
+            </div>
         </div>
+
+        
     );
+    
+    
+    
 };
 
 export default Map;

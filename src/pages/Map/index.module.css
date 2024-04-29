@@ -5,7 +5,9 @@
     height: 100vh; /* Высота контейнера на всю высоту видимой области */
     font-family: Inter, sans-serif;
 }
-
+.statContainer {
+    width: 100%;
+}
 .block {
     position: relative; /* Добавляем позиционирование */
     display: grid;
@@ -30,10 +32,12 @@
     top: 25%; /* Располагаем по верхнему краю */
     right: 10%; /* Располагаем по правому краю */
     z-index: 1;
+    padding-left: 10px;
 }
 
 .mapContainer {
     flex: 1; /* Растягиваем контейнер с картой на всю доступную ширину */
+    margin-left: 30px;
 }
 
 .tableContainer {
@@ -50,6 +54,7 @@
 .buttonsContainer {
     margin-left: 35%;
     position: relative;
+    padding-bottom: 20px;
 }
 
 
@@ -57,3 +62,37 @@
 .tablebutton {
     margin-left: 30%;
 }
+.fullWidthContainer {
+    position: absolute;
+    bottom: -100%; /* Скрываем контейнер за пределами видимой области */
+    left: 0;
+    width: 100%;
+    max-height: calc(100vh - 1px); /* Максимальная высота контейнера, чтобы оставить место для прокрутки */
+    overflow-y: auto; /* Разрешаем вертикальную прокрутку, если контент выходит за пределы контейнера */
+    background-color: #ffffff;
+    border-radius: 10px; /* Скругление углов */
+    padding: 20px; /* Отступы внутри контейнера */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: Inter, sans-serif;
+    color: black;
+    transition: bottom 0.3s ease; /* Добавляем плавный переход */
+}
+
+/* Показываем контейнер, когда страница прокручена до нижнего края */
+body.scroll-bottom .fullWidthContainer {
+    bottom: 0;
+}
+
+
+
+.fullWidthContent {
+    display: flex; /* Используем flex-контейнер */
+    justify-content: space-between; /* Распределяем пространство между элементами */
+    padding-left: 50px;
+}
+
+.chartContainer {
+    flex: 0 0 48%; /* Задаем ширину 48% для каждой диаграммы, чтобы они вместились в одну линию */
+    margin-bottom: 20px; /* Добавляем отступ между диаграммами */
+}
+
