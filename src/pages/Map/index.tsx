@@ -5,6 +5,8 @@ import {DatePicker, Button, Input} from 'antd';
 import './customDatePicker.css';
 import styles from "./index.module.css";
 
+import { sendEvent } from "../../utils/Metriks";
+
 const {RangePicker} = DatePicker;
 
 const Map = () => {
@@ -42,6 +44,10 @@ const Map = () => {
         const updatedExpenses = [...expenses];
         updatedExpenses[index][key] = value;
         setExpenses(updatedExpenses);
+    };
+
+    const handleClickStatistic = () => {       
+        sendEvent('reachGoal', 'StatisticButtonClick');
     };
 
     return (
@@ -91,7 +97,7 @@ const Map = () => {
                 </div>
                 <div className={styles.buttonsContainer}>
                     <Button type="primary" style={{backgroundColor: '#00B58A'}}>Сохранить</Button>
-                    <Button type="primary" style={{backgroundColor: '#00A9B4', marginLeft: '10px'}}>Статистика</Button>
+                    <Button type="primary" style={{backgroundColor: '#00A9B4', marginLeft: '10px'}} onClick={handleClickStatistic} >Статистика</Button>
                 </div>
             </div>
         </div>

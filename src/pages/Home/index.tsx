@@ -4,6 +4,8 @@ import homePic from "./homePic.png";
 import regPic from "./regPic.png";
 
 import { Link } from "react-router-dom";
+import { sendEvent } from "../../utils/Metriks";
+
 
 const Home = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
@@ -36,6 +38,10 @@ const Home = () => {
         transition: `background-color ${transitionDuration}s ease`
     };
 
+    const handleClick = () => {       
+        sendEvent('reachGoal', 'CreateTripClick');
+    };
+
     return (
         <div className={styles.container} style={containerStyle}>
             <div className={`${styles.primary} `}>
@@ -48,7 +54,7 @@ const Home = () => {
                 </h1>
             </div>
             <div className={styles.linkWrapper}>
-                <Link to="/map" className={styles.roundedLink}>
+                <Link to="/map" className={styles.roundedLink} onClick={handleClick}>
                     Создать путешествие
                 </Link>
             </div>
