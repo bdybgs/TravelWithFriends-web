@@ -6,6 +6,7 @@ import Home from "./pages/Home"
 import Contacts from "./pages/Contacts"
 import Header from "./components/Header";
 import About from "./pages/About";
+import PublicatedTrips from "./pages/PublicatedTrips";
 
 //import { Login } from "./pages/Login";
 import { RequireAuth } from "./hoc/RequireAuth";
@@ -71,6 +72,7 @@ const App: React.FC = () => {
             {showHeader && <Header />}
             <Routes>
                 <Route path="/about" element={<About />} />
+                <Route path="/publicatedtrips" element={<PublicatedTrips />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/map" element={<RequireAuth><Map /></RequireAuth>} />
