@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, {useContext, useState} from "react";
 import { NavigateFunction, useNavigate } from 'react-router-dom';
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import { login } from "../services/auth.service";
-import styles from "../pages/Login/index.module.css";
+import styles from "./index.module.css";
 import logo from "../pages/Login/logo.webp";
+import {AuthContext} from "../hoc/AuthProvider";
 
 
 
@@ -13,6 +14,7 @@ type Props = {}
 
 const Login: React.FC<Props> = () => {
   let navigate: NavigateFunction = useNavigate();
+  const { signin, signout } = useContext(AuthContext);
 
   const [loading, setLoading] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
@@ -38,8 +40,8 @@ const Login: React.FC<Props> = () => {
 
     login(name, password).then(
       () => {
-        navigate("/profile");
-        window.location.reload();
+        signin({ name, password }, () => {});
+        navigate("/map");
       },
       (error) => {
         const resMessage =
@@ -96,6 +98,14 @@ const Login: React.FC<Props> = () => {
                 <span>Login</span>
               </button>
             </div>
+            <button
+                    className={`${styles.button} btn btn-primary btn-block margin-top`}
+                    style={{ marginTop: '20px' }}
+                    disabled={loading}
+                    onClick={() => window.location.href = '/registration'}>
+              <span>Registration</span>
+            </button>
+
 
             {message && (
               <div className="form-group">

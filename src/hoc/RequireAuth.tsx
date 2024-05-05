@@ -1,11 +1,11 @@
 import { useLocation, Navigate } from "react-router-dom";
-import React, { ReactNode } from "react";
+import React, {ReactNode, useContext} from "react";
+import {AuthContext} from "./AuthProvider";
 
 const RequireAuth = ({ children }: { children: ReactNode }) => {
-    const location = useLocation();
-    const auth = true;
+    const { user } = useContext(AuthContext);
 
-    if (!auth) {
+    if (!user) {
         return <Navigate to="/login" />;
     }
 

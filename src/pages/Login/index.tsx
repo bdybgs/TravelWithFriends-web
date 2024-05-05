@@ -2,7 +2,7 @@ import React, {ReactNode} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import App from "../../App";
 import {inspect} from "util";
-import styles from "./index.module.css"
+import styles from "../../login-register/index.module.css"
 import logo from "./logo.webp";
 
 const Login = () => {

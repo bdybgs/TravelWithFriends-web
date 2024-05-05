@@ -69,7 +69,7 @@ const App: React.FC = () => {
 
     return (
         <div>
-            {showHeader && <Header />}
+            <Header />
             <Routes>
                 <Route path="/about" element={<About />} />
                 <Route path="/publicatedtrips" element={<PublicatedTrips />} />

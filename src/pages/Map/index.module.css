@@ -8,6 +8,16 @@
 .statContainer {
     width: 100%;
 }
+.customSelect {
+    position: absolute;
+    margin-top: 20px;
+    width: 120px;
+    margin-left: 450px; /* Задаем отступ слева */
+    z-index: 1;
+
+}
+
+
 .block {
     position: relative; /* Добавляем позиционирование */
     display: grid;

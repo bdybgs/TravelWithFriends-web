@@ -9,8 +9,36 @@
 .primary nav ul {
     list-style-type: none;
     padding: 0;
-    margin-left: 590px;
+    margin-left: 350px;
 }
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownContent {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdownContent a, .dropdownContent button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdownContent a:hover, .dropdownContent button:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdownContent {
+    display: block;
+}
+
 
 .primary nav ul a {
     text-decoration: none; /* Убираем подчеркивание ссылок */
@@ -24,6 +52,13 @@
 
 .primary nav ul a:hover {
     background-color: #555; /* Изменяем цвет фона при наведении на ссылку */
+}
+.logoSingIn {
+    width: 42px;
+    height: auto; /* Автоматически определяем высоту (сохраняя пропорции) */
+    margin-right: auto;
+    margin-left: 67px   ;
+    filter: invert(1);
 }
 .logo {
     width: 100px; /* Устанавливаем ширину логотипа */

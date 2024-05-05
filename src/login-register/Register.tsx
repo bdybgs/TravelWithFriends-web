@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import styles from "../pages/Login/index.module.css";
+import styles from "./index.module.css";
 import IUser from "../types/user.type";
-import { register } from "../services/auth.service"; // Импортируем функцию register из auth.service.ts
+import { register } from "../services/auth.service";
 import logo from "../pages/Login/logo.webp";
+import { useNavigate } from "react-router-dom"; // Импорт useNavigate
 
 const Register: React.FC = () => {
     const [successful, setSuccessful] = useState<boolean>(false);
     const [message, setMessage] = useState<string>("");
+    const navigate = useNavigate(); // Создание экземпляра useNavigate
 
     const initialValues: IUser = {
         name: '',
@@ -45,10 +47,11 @@ const Register: React.FC = () => {
     const handleRegister = (formValue: IUser) => {
         const { name, email, password } = formValue;
 
-        register(name, email, password).then( // Вызываем функцию register из auth.service.ts
+        register(name, email, password).then(
             (response) => {
                 setMessage(response.data.message);
                 setSuccessful(true);
+                navigate('/login'); // Перенаправление на /login после успешной регистрации
             },
             (error) => {
                 const resMessage =

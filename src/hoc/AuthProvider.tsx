@@ -1,24 +1,41 @@
-import {createContext, SetStateAction, useState} from 'react';
+import React, { createContext, useState, ReactNode } from 'react';
 
-export const AuthContext = createContext(null);
+interface AuthContextType {
+    user: any;  // Укажите более конкретный тип в зависимости от структуры вашего пользователя
+    signin: (newUser: any, callback: () => void) => void;
+    signout: (callback: () => void) => void;
+}
 
-// @ts-ignore
-export const AuthProvider = ({children}) => {
-    const [user, setUser] = useState(null);
+export const AuthContext = createContext<AuthContextType>({
+    user: undefined,
+    signin: () => {},
+    signout: () => {}
+});
 
-    const signin = (newUser: SetStateAction<null>, cb: () => void) => {
+interface AuthProviderProps {
+    children: ReactNode;
+}
+
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+    const [user, setUser] = useState<any>(null);
+
+    const signin = (newUser: any, callback: () => void) => {
+        console.log("Signing in:", newUser);
         setUser(newUser);
-        cb();
+        if (callback) callback();
     }
-    const signout = (cb: () => void) => {
+
+    const signout = (callback: () => void) => {
+        console.log("Signing out");
         setUser(null);
-        cb();
+        if (callback) callback();
     }
 
-    const value = {user, signin, signout}
+    const value = { user, signin, signout };
 
-    // @ts-ignore
-    return <AuthContext.Provider value={value}>
-        {children}
-    </AuthContext.Provider>
+    return (
+        <AuthContext.Provider value={value}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
