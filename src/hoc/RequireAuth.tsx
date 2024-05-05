@@ -4,7 +4,7 @@ import {AuthContext} from "./AuthProvider";
 
 const RequireAuth = ({ children }: { children: ReactNode }) => {
     const { user } = useContext(AuthContext);
-
+//
     if (!user) {
         return <Navigate to="/login" />;
     }
