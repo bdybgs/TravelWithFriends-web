@@ -41,6 +41,7 @@ const Login: React.FC<Props> = () => {
     login(name, password).then(
       () => {
         signin({ name, password }, () => {});
+        localStorage.setItem("email", name);
         navigate("/map");
       },
       (error) => {

@@ -1,57 +1,93 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
 import Card from "./Card";
+import { getTrips } from "../../services/publicated_trips.service";
+import { getCurrentUser } from "../../services/auth.service";
+import TripPopup from "./TripPopup";
+import { useNavigate } from 'react-router-dom';
 
 const PublicatedTrips: React.FC = () => {
-    const [rows, setRows] = useState(3);
-    const containerRef = useRef<HTMLDivElement>(null);
+  const [trips, setTrips] = useState<any[]>([]);
+  const [rows, setRows] = useState(3);
+  const [selectedTrip, setSelectedTrip] = useState<any>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
 
-    // Массив из 12 рандомных городов
-    const cities = [
-        "Москва", "Санкт-Петербург", "Нью-Йорк", "Лондон", "Париж",
-        "Токио", "Берлин", "Рим", "Мадрид", "Пекин", "Дубаи", "Сидней"
-    ];
-
-    const authors = ["Александр", "Екатерина", "Иван", "Мария", "Дмитрий"];
-
-    useEffect(() => {
-        const handleScroll = () => {
-            if (
-                containerRef.current &&
-                window.innerHeight + window.scrollY >=
-                    containerRef.current.offsetHeight
-            ) {
-                setRows((prevRows) => Math.min(prevRows + 1, 3));
-            }
-        };
-
-        window.addEventListener("scroll", handleScroll);
-
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-        };
-    }, []);
-
-    const generateRandomNumberOfDays = () => {
-        return Math.floor(Math.random() * 30) + 1; // Генерируем случайное число от 1 до 30
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        containerRef.current &&
+        window.innerHeight + window.scrollY >=
+          containerRef.current.offsetHeight
+      ) {
+        setRows((prevRows) => Math.min(prevRows + 1, 3));
+      }
     };
 
-    return (
-        <div className={styles.container} ref={containerRef}>
-            {[...Array(rows)].map((_, rowIndex) => (
-                <div key={rowIndex} className={styles.row}>
-                    {[...Array(4)].map((_, cardIndex) => (
-                        <Card
-                            key={cardIndex}
-                            title={cities[rowIndex * 4 + cardIndex]} // Передаем случайный город в качестве заголовка
-                            text={`${generateRandomNumberOfDays()} дней`}
-                            author={authors[Math.floor(Math.random() * authors.length)]} // Генерируем случайное имя автора
-                        />
-                    ))}
-                </div>
-            ))}
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    getTrips()
+      .then((data) => {
+        setTrips(data);
+      })
+      .catch((error) => {
+        console.error("Ошибка при получении списка путешествий:", error);
+      });
+  }, []);
+
+  const handleCardClick = (trip: any) => {
+    setSelectedTrip(trip);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedTrip(null);
+  };
+
+  const isAuthenticated = () => {
+    const userEmail = localStorage.getItem("email");
+    return userEmail !== null; // Возвращает true, если пользователь авторизован, и false в противном случае
+  };
+  
+
+  const handleCreate = () => {
+    if (isAuthenticated()) {
+      navigate("/map");
+    } else {
+      // Показать попап с надписью "Авторизуйтесь!"
+      alert("Авторизуйтесь!");
+    }
+  };
+  
+
+  return (
+    <div className={styles.container} ref={containerRef}>
+      {trips.slice(0, rows * 4).map((trip, index) => (
+        <div key={index} className={styles.row}>
+          <Card
+            title={trip.city}
+            text={`${trip.days.length} дней`}
+            author={trip.creatorName}
+            onClick={() => handleCardClick(trip)}
+          />
         </div>
-    );
+      ))}
+      {selectedTrip && (
+        <TripPopup
+          creatorName={selectedTrip.creatorName}
+          city={selectedTrip.city} // Передаем город и дни путешествия
+          days={selectedTrip.days}
+          onClose={handleClosePopup}
+          onCreate={handleCreate} 
+        />
+      )}
+    </div>
+  );
 };
 
 export default PublicatedTrips;
