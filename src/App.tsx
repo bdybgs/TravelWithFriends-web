@@ -7,6 +7,7 @@ import Contacts from "./pages/Contacts"
 import Header from "./components/Header";
 import About from "./pages/About";
 import PublicatedTrips from "./pages/PublicatedTrips";
+import Profile from "./pages/Profile";
 
 //import { Login } from "./pages/Login";
 import { RequireAuth } from "./hoc/RequireAuth";
@@ -22,7 +23,7 @@ import Login from "./login-register/Login";
 import Register from "./login-register/Register";
 
 //import Home from "./components/Home";
-import Profile from "./components/Profile";
+//import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
@@ -47,8 +48,8 @@ const App: React.FC = () => {
 
         if (user) {
             setCurrentUser(user);
-            setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
-            setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
+            // setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
+            // setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
         }
 
         EventBus.on("logout", logOut);
@@ -73,6 +74,7 @@ const App: React.FC = () => {
             <Routes>
                 <Route path="/about" element={<About />} />
                 <Route path="/publicatedtrips" element={<PublicatedTrips />} />
+                <Route path="/profile" element={<Profile />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/contacts" element={<Contacts />} />
                 <Route path="/map" element={<RequireAuth><Map /></RequireAuth>} />
