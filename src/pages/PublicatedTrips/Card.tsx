@@ -5,9 +5,10 @@ interface CardProps {
     title: string;
     text: string;
     author: string;
+    onClick: () => void; // Добавляем обработчик события onClick
 }
 
-const Card: React.FC<CardProps> = ({ title, text, author }) => {
+const Card: React.FC<CardProps> = ({ title, text, author, onClick }) => {
     const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null);
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const Card: React.FC<CardProps> = ({ title, text, author }) => {
     }, [title]);
 
     return (
-        <div className={styles.card}>
+        <div className={styles.card} onClick={onClick}> {/* Добавляем обработчик onClick */}
             <h2>{title}</h2>
             <p>{text}</p>
             <div style={{ width: "100%", height: "200px", position: "relative" }}>

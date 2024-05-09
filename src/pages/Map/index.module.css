@@ -17,7 +17,11 @@
 
 }
 
-
+.inputField {
+    width: 30%; /* Ширина поля ввода */
+    margin-top: 8px; /* Отступ сверху */
+    margin-left: 10px;
+}
 .block {
     position: relative; /* Добавляем позиционирование */
     display: grid;

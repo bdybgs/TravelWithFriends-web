@@ -14,8 +14,14 @@
 
 
 .card {
-    width: 15%;
+    width: 30%;
     height: 300px;
     margin: 10px;
     background-color: #696D74; /* Светло-бежевый цвет */
 }
+.container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  
