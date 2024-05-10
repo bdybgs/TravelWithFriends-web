@@ -5,12 +5,12 @@ import { DatePicker, Button, Input, Select } from 'antd';
 import './customDatePicker.css';
 import styles from "./index.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
-
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getTrip, addParticipant } from "../../services/trip.service";
 
 import { sendEvent } from "../../utils/Metriks";
 import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
-
+import ExpenseTable from './ExpenseTable';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
@@ -202,46 +202,28 @@ const Map = () => {
                         <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
                     </div>
 
-                    <div className={styles.textdata}>Дата</div>
-                    <div className={styles.datePicker}><RangePicker onChange={handleDateChange} />
-                    </div>
+                    <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
+                    {/* <div className={styles.datePicker}><RangePicker onChange={handleDateChange} />
+                    </div> */}
 
                 </div>
-                <div className={styles.tableContainer}>
-                    <table className={styles.table} id="table">
-                    <div>День {currentDay + 1}</div>
+                <div >
+                {/* <div className={styles.tableContainer}> */}
+                    <ExpenseTable
+                        expenses={expensesByDay[currentDay]}
+                        currentDay={currentDay}
+                        addExpense={addExpense}
+                        removeExpense={removeExpense}
+                        handleExpenseChange={handleExpenseChange}
+                    />
 
-                        <thead>
-                        <tr>
-                            <th>Действие</th>
-                            <th>Участники</th>
-                            <th>Оплачивал</th>
-                            <th>За одного</th>
-                            <th>Итог</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {expensesByDay[currentDay].map((expense, index) => (
-                            <tr key={index}>
-                                <td><Input value={expense.action} onChange={(e) => handleExpenseChange(expense.id, 'action', e.target.value)} /></td>
-                                <td><Input value={expense.participants} onChange={(e) => handleExpenseChange(expense.id, 'participants', e.target.value)} /></td>
-                                <td><Input value={expense.payer} onChange={(e) => handleExpenseChange(expense.id, 'payer', e.target.value)} /></td>
-                                <td><Input type="number" value={expense.costPerPerson} onChange={(e) => handleExpenseChange(expense.id, 'costPerPerson', e.target.value)} /></td>
-                                <td><Input type="number" value={expense.totalCost} onChange={(e) => handleExpenseChange(expense.id, 'totalCost', e.target.value)} /></td>
-                                <Button onClick={() => removeExpense(expense.id, currentDay)}>Удалить</Button>
-                            </tr>
-                        ))}
+                <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
+                    <FaChevronLeft style={{ color: 'black' }} />
+                </Button>
+                <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
+                    <FaChevronRight style={{ color: 'black' }} />
+                </Button>
 
-                        </tbody>
-                    </table>
-                    <Button onClick={addExpense} className={styles.tablebutton}>Добавить трату</Button>
-
-                    <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
-                        <i className="fas fa-chevron-left"></i>
-                    </Button>
-                    <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
-                        <i className="fas fa-chevron-right"></i>
-                    </Button>
 
 
                 </div>
