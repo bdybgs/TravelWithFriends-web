@@ -2,18 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Link } from 'react-router-dom';
 import styles from "./index.module.css";
 import CreatePopup from "./CreatePopup";
-import { createTrip, getCreatorId } from "../../services/trip.service";
+import { createTrip, getCreatorId, getUserTrips } from "../../services/trip.service";
+import TripCard from "./TripCard";
+import { useNavigate } from 'react-router-dom';
+
 const Profile: React.FC = () => {
     const userEmail = localStorage.getItem("email");
     const [isCreatePopupOpen, setCreatePopupOpen] = useState(false);
     const [city, setCity] = useState("");
     const [numOfParticipants, setNumOfParticipants] = useState<number>(0); 
     const [creatorId, setCreatorId] = useState<string>("");
-
+    const [trips, setTrips] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (userEmail) {
             getCrId(userEmail);
+        }
+    }, [userEmail]);
+
+    useEffect(() => {
+        if (userEmail) {
+            fetchUserTrips(userEmail);
         }
     }, [userEmail]);
 
@@ -34,6 +44,27 @@ const Profile: React.FC = () => {
         }
     };
 
+    const fetchUserTrips = async (email: string) => {
+        try {
+            const userTrips = await getUserTrips(email);
+            setTrips(userTrips);
+        } catch (error) {
+            console.error("Error fetching user trips:", error);
+        }
+    };
+    
+    const handleCreateTrip = () => {
+        if (userEmail) {
+            // После создания нового трипа обновляем список путешествий
+            fetchUserTrips(userEmail);
+        } else {
+            console.error("Email пользователя не доступен.");
+        }
+    };
+    
+    const handleMapClick = (tripId: string) => {
+        navigate(`/map/${tripId}`);
+    };
 
     return (
         <div className="container">
@@ -54,6 +85,22 @@ const Profile: React.FC = () => {
                 {currentUser.roles &&
                     currentUser.roles.map((role: string, index: number) => <li key={index}>{role}</li>)}
             </ul>*/}
+
+            <strong>User Trips:</strong>
+            <div className={styles.tripList}>
+                {trips.map((trip: any) => (
+                    <TripCard
+                        key={trip.id}
+                        title={trip.title}
+                        text={`City: ${trip.city}`} // Используем city в качестве текста
+                        author={trip.creatorName} // Используем creatorName в качестве автора
+                        onClick={() => {
+                            handleMapClick(trip.id);
+                        }}
+                    />
+                ))}
+            </div>
+
             {isCreatePopupOpen && <CreatePopup
                 creatorName={userEmail || ""}
                 creatorId={creatorId}
@@ -65,9 +112,7 @@ const Profile: React.FC = () => {
                 hotelTitle="" // Пустая строка, так как этот пропс не используется
                 isPublicated={false} // Логическое значение, можете передать true или false в зависимости от ваших потребностей
                 onClose={handleCreatePopupClose}
-                onCreate={() => {
-                    // Действие при создании, если необходимо
-                }}
+                onCreate={handleCreateTrip}
             />}
         </div>
     );

@@ -4,13 +4,27 @@ import { TPoint } from "../../types/TPoint";
 import { DatePicker, Button, Input, Select } from 'antd';
 import './customDatePicker.css';
 import styles from "./index.module.css";
+import { useNavigate, useParams } from 'react-router-dom';
+import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+import { getTrip, addParticipant } from "../../services/trip.service";
 
 import { sendEvent } from "../../utils/Metriks";
 import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
+import ExpenseTable from './ExpenseTable';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const Map = () => {
+    const { tripId } = useParams(); // Извлекаем параметр tripId из URL
+    const navigate = useNavigate();
+    
+    const [tripData, setTripData] = useState<any>({});
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
+    // Используем tripId для установки начального значения поля для названия
+    const [title, setTitle] = useState<string>(tripId ? tripId : '');
+    const [participantEmail, setParticipantEmail] = useState<string>('');
+
     const [points, setPoints] = useState<TPoint[]>([]);
     const [dateRange, setDateRange] = useState<any[]>([]);
     const [expenses, setExpenses] = useState<any[]>([]); // Хранение данных таблицы
@@ -19,9 +33,18 @@ const Map = () => {
     const [currentPage, setCurrentPage] = useState<number>(1); // Текущая страница
     const itemsPerPage = 10; // Количество элементов на странице
     const blockRef = useRef<HTMLDivElement>(null);
-    const [title, setTitle] = useState<string>('');
     const [numOfParticipants, setNumOfParticipants] = useState<number>(0);
+    const [selectedDay, setSelectedDay] = useState(0);
 
+    const [currentDay, setCurrentDay] = useState(0); // Индекс текущего дня
+    const totalDays = 3; // Общее количество дней
+    
+    const [expensesByDay, setExpensesByDay] = useState<{ [key: number]: any[] }>({
+        0: [],
+        1: [],
+        2: []
+    });
+    
 
     useEffect(() => {
         setTimeout(() => {
@@ -29,6 +52,21 @@ const Map = () => {
         }, 2000);
     }, []);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (!tripId || tripId === '000') return; // Если tripId не определен, не делаем запрос
+                const trip = await getTrip(tripId);
+                setTripData(trip);
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching trip data:', error);
+            }
+        };
+    
+        fetchData();
+    }, [tripId]);
+    
     useEffect(() => {
         // Получаем высоту таблицы
         const tableHeight = document.getElementById('table')?.offsetHeight || 0;
@@ -43,16 +81,22 @@ const Map = () => {
     };
 
     const addExpense = () => {
-        const newExpense = { id: Date.now(), action: '', participants: '', payer: '', costPerPerson: '', totalCost: '' };
-        setExpenses([...expenses, newExpense]);
-        setTableRows(tableRows + 1); // Увеличиваем количество строк на 1 при добавлении траты
+        const newExpense = { id: Date.now(), action: '', participants: '', payer: '', costPerPerson: '', totalCost: '', day: currentDay };
+        setExpensesByDay(prevState => ({
+            ...prevState,
+            [currentDay]: [...prevState[currentDay], newExpense]
+        }));
+        setTableRows(tableRows + 1);
     };
-
-    const removeExpense = (id: number) => {
-        const updatedExpenses = expenses.filter(expense => expense.id !== id);
-        setExpenses(updatedExpenses);
+    
+    const removeExpense = (id: number, day: number) => {
+        const updatedExpenses = expensesByDay[day].filter(expense => expense.id !== id);
+        setExpensesByDay(prevState => ({
+            ...prevState,
+            [day]: updatedExpenses
+        }));
     };
-
+    
     const handleExpenseChange = (id: number, key: string, value: string) => {
         const updatedExpenses = expenses.map(expense => {
             if (expense.id === id) {
@@ -75,13 +119,36 @@ const Map = () => {
         }
     };
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.target.value); 
-    };
-
     const handleParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value, 10); // Преобразование строки в число с основанием 10
         setNumOfParticipants(value); 
+    };
+    
+    const handleAddParticipant = () => {
+        if (!tripId) {
+            alert('Невозможно добавить участника: tripId не определен.');
+            return;
+        }
+    
+        if (!participantEmail.trim()) {
+            // Если email пустой, показываем сообщение об ошибке
+            // Можно использовать уведомление или другой способ оповещения пользователя
+            alert('Пожалуйста, введите email участника.');
+            return;
+        }
+        addParticipant(tripId, participantEmail)
+            .then((response) => {
+                // Обновляем данные о трипе после успешного добавления участника
+                if (response) {
+                    setTripData(response);
+                    setParticipantEmail(''); // Очищаем поле ввода email
+                    alert('Участник успешно добавлен.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error adding participant:', error);
+                alert('Произошла ошибка при добавлении участника. Пожалуйста, попробуйте еще раз.');
+            });
     };
     
 
@@ -112,71 +179,55 @@ const Map = () => {
 
     return (
 
-        <div className={styles.container}>
-            {/* Выбор команды */}
+        <div className={styles.container}>            
             <div className={styles.mapContainer}>
                 <YandexMap points={points} />
             </div>
             <div className={styles.block}>
+                
                 <div>
-                    <div>
-                        <div className={styles.textdata}>Название</div>
-                            <Input 
-                                value={title} 
-                                onChange={handleTitleChange} // Добавляем обработчик изменения значения названия
-                                className={styles.inputField} 
-                                placeholder="Введите название" 
-                            />
-                        </div>
-                        <div>
-                        <div className={styles.textdata}>Число участников</div>
-                            <Input 
-                                value={numOfParticipants} 
-                                onChange={handleParticipantsChange} 
-                                className={styles.inputField} 
-                                placeholder="Число участников" 
-                            />
-                        </div>
+                    <div className={styles.textdata}>Название: {tripData.title}</div>
+                    <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
+                    <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
+                    <div className={styles.textdata}>Город: {tripData.city}</div>
+                    <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
+                    
+                    <div className={styles.addParticipantContainer}>
+                        <Input 
+                            className={styles.inputField} 
+                            placeholder="Введите email участника" 
+                            value={participantEmail} 
+                            onChange={(e) => setParticipantEmail(e.target.value)} // Добавляем обработчик изменения значения email участника
+                        />
+                        <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
+                    </div>
 
-                        <div className={styles.textdata}>Дата</div>
-                        <div className={styles.datePicker}><RangePicker onChange={handleDateChange} />
-                        </div>
+                    <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
+                    {/* <div className={styles.datePicker}><RangePicker onChange={handleDateChange} />
+                    </div> */}
 
                 </div>
-                <div className={styles.tableContainer}>
-                    <table className={styles.table} id="table">
-                        <thead>
-                        <tr>
-                            <th>Действие</th>
-                            <th>Участники</th>
-                            <th>Оплачивал</th>
-                            <th>За одного</th>
-                            <th>Итог</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {paginatedExpenses.map((expense, index) => (
-                            <tr key={index}>
-                                <td><Input value={expense.action} onChange={(e) => handleExpenseChange(expense.id, 'action', e.target.value)} /></td>
-                                <td><Input value={expense.participants} onChange={(e) => handleExpenseChange(expense.id, 'participants', e.target.value)} /></td>
-                                <td><Input value={expense.payer} onChange={(e) => handleExpenseChange(expense.id, 'payer', e.target.value)} /></td>
-                                <td><Input type="number" value={expense.costPerPerson} onChange={(e) => handleExpenseChange(expense.id, 'costPerPerson', e.target.value)} /></td>
-                                <td><Input type="number" value={expense.totalCost} onChange={(e) => handleExpenseChange(expense.id, 'totalCost', e.target.value)} /></td>
-                                <Button onClick={() => removeExpense(expense.id)}>Удалить</Button>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                    <Button onClick={addExpense} className={styles.tablebutton}>Добавить трату</Button>
+                <div >
+                {/* <div className={styles.tableContainer}> */}
+                    <ExpenseTable
+                        expenses={expensesByDay[currentDay]}
+                        currentDay={currentDay}
+                        addExpense={addExpense}
+                        removeExpense={removeExpense}
+                        handleExpenseChange={handleExpenseChange}
+                    />
+
+                <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
+                    <FaChevronLeft style={{ color: 'black' }} />
+                </Button>
+                <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
+                    <FaChevronRight style={{ color: 'black' }} />
+                </Button>
+
+
+
                 </div>
-                <Select defaultValue=""
-                        className={styles.customSelect}
-                        onChange={(value) => setSelectedTeam(value)}>
-                    <Option value="">Выберите команду</Option>
-                    <Option value="team1">Команда 1</Option>
-                    <Option value="team2">Команда 2</Option>
-                    <Option value="team3">Команда 3</Option>
-                </Select>
+
                 <div className={styles.buttonsContainer}>
                     <Button type="primary" style={{ backgroundColor: '#00B58A' }}>Сохранить</Button>
                     <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickStatistic}>Статистика</Button>

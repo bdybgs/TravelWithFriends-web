@@ -86,6 +86,7 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
             
             // Вызываем onCreate после успешного создания путешествия
             onCreate();
+            onClose();
         } catch (error) {
             console.error("Ошибка при создании путешествия:", error);
         }

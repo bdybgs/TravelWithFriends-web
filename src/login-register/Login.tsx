@@ -38,20 +38,23 @@ const Login: React.FC<Props> = () => {
     setMessage("");
     setLoading(true);
 
-    login(name, password).then(
-        (response) => {
-          // Проверяем, является ли пользователь администратором
-          if (response.isAdmin || response.data || response.data.isAdmin) {
-            signin({ name, password }, () => {});
-            localStorage.setItem("email", name);
-            navigate("/admin"); // Перенаправляем администратора на страницу /admin
-          } else {
-            // Если пользователь не администратор, перенаправляем его на страницу /map
-            signin({ name, password }, () => {});
-            localStorage.setItem("email", name);
-            navigate("/map");
-          }
-        },
+    (login(name, password) as Promise<any>).then(
+      (response) => {
+        // Выводим данные респонса в консоль
+        console.log("Response data:", response);
+  
+        // Проверяем, является ли пользователь администратором
+        if ((response.data && response.data.isAdmin) || response.isAdmin) {
+          signin({ name, password }, () => {});
+          localStorage.setItem("email", name);
+          navigate("/admin"); // Перенаправляем администратора на страницу /admin
+        } else {
+          // Если пользователь не администратор, перенаправляем его на страницу /map
+          signin({ name, password }, () => {});
+          localStorage.setItem("email", name);
+          navigate("/profile");
+        }
+      },
       (error) => {
         const resMessage =
           (error.response &&
@@ -65,6 +68,7 @@ const Login: React.FC<Props> = () => {
       }
     );
   };
+
 
   return (
       <div className={styles.container}>
