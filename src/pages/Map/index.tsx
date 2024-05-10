@@ -6,6 +6,8 @@ import './customDatePicker.css';
 import styles from "./index.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
 
+import { getTrip, addParticipant } from "../../services/trip.service";
+
 import { sendEvent } from "../../utils/Metriks";
 import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
 
@@ -16,9 +18,12 @@ const Map = () => {
     const { tripId } = useParams(); // Извлекаем параметр tripId из URL
     const navigate = useNavigate();
     
+    const [tripData, setTripData] = useState<any>({});
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+
     // Используем tripId для установки начального значения поля для названия
     const [title, setTitle] = useState<string>(tripId ? tripId : '');
-
+    const [participantEmail, setParticipantEmail] = useState<string>('');
 
     const [points, setPoints] = useState<TPoint[]>([]);
     const [dateRange, setDateRange] = useState<any[]>([]);
@@ -36,6 +41,26 @@ const Map = () => {
             setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
         }, 2000);
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (!tripId || tripId === '000') return; // Если tripId не определен, не делаем запрос
+                const trip = await getTrip(tripId);
+                setTripData(trip);
+                setIsLoading(false);
+            } catch (error) {
+                console.error('Error fetching trip data:', error);
+            }
+        };
+    
+        fetchData();
+    }, [tripId]);
+    
+
+    // if (isLoading) {
+    //     return <div>Loading...</div>;
+    // }
 
     useEffect(() => {
         // Получаем высоту таблицы
@@ -88,6 +113,37 @@ const Map = () => {
         setNumOfParticipants(value); 
     };
     
+    const handleAddParticipant = () => {
+        if (!tripId) {
+            // Если tripId не определен, показываем сообщение об ошибке
+            // Можно использовать уведомление или другой способ оповещения пользователя
+            alert('Невозможно добавить участника: tripId не определен.');
+            return;
+        }
+    
+        if (!participantEmail.trim()) {
+            // Если email пустой, показываем сообщение об ошибке
+            // Можно использовать уведомление или другой способ оповещения пользователя
+            alert('Пожалуйста, введите email участника.');
+            return;
+        }
+    
+        // Выполняем метод addParticipant с tripId и participantEmail
+        addParticipant(tripId, participantEmail)
+            .then((response) => {
+                // Обновляем данные о трипе после успешного добавления участника
+                if (response) {
+                    setTripData(response);
+                    setParticipantEmail(''); // Очищаем поле ввода email
+                    alert('Участник успешно добавлен.');
+                }
+            })
+            .catch((error) => {
+                console.error('Error adding participant:', error);
+                alert('Произошла ошибка при добавлении участника. Пожалуйста, попробуйте еще раз.');
+            });
+    };
+    
 
     // Данные для диаграммы "Расходы по команде"
     const teamExpensesData = [
@@ -122,24 +178,27 @@ const Map = () => {
                 <YandexMap points={points} />
             </div>
             <div className={styles.block}>
+                
                 <div>
-                <div>
-                    <div className={styles.textdata}>Название: {title}</div>
-
+                    <div className={styles.textdata}>Название: {tripData.title}</div>
+                    <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
+                    <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
+                    <div className={styles.textdata}>Город: {tripData.city}</div>
+                    <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
+                    
+                    <div className={styles.addParticipantContainer}>
+                        <Input 
+                            className={styles.inputField} 
+                            placeholder="Введите email участника" 
+                            value={participantEmail} 
+                            onChange={(e) => setParticipantEmail(e.target.value)} // Добавляем обработчик изменения значения email участника
+                        />
+                        <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
                     </div>
-                        <div>
-                        <div className={styles.textdata}>Число участников</div>
-                            <Input 
-                                value={numOfParticipants} 
-                                onChange={handleParticipantsChange} 
-                                className={styles.inputField} 
-                                placeholder="Число участников" 
-                            />
-                        </div>
 
-                        <div className={styles.textdata}>Дата</div>
-                        <div className={styles.datePicker}><RangePicker onChange={handleDateChange} />
-                        </div>
+                    <div className={styles.textdata}>Дата</div>
+                    <div className={styles.datePicker}><RangePicker onChange={handleDateChange} />
+                    </div>
 
                 </div>
                 <div className={styles.tableContainer}>
@@ -168,14 +227,14 @@ const Map = () => {
                     </table>
                     <Button onClick={addExpense} className={styles.tablebutton}>Добавить трату</Button>
                 </div>
-                <Select defaultValue=""
+                {/* <Select defaultValue=""
                         className={styles.customSelect}
                         onChange={(value) => setSelectedTeam(value)}>
                     <Option value="">Выберите команду</Option>
                     <Option value="team1">Команда 1</Option>
                     <Option value="team2">Команда 2</Option>
                     <Option value="team3">Команда 3</Option>
-                </Select>
+                </Select> */}
                 <div className={styles.buttonsContainer}>
                     <Button type="primary" style={{ backgroundColor: '#00B58A' }}>Сохранить</Button>
                     <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickStatistic}>Статистика</Button>

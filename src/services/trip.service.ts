@@ -22,6 +22,7 @@ const API_URL_ACCOUNTS = "http://localhost:10000/v1/Accounts/getid/";
 
 const API_URL_USERTRIPS = "http://localhost:10000/v1/Trip/usertrips/";
 
+const API_URL_ADDPARTICIPANT = "http://localhost:10000/v1/Trip/usertrips/";
 
 export const createTrip = (tripData: TripData) => {
   // Получаем токен доступа из локального хранилища
@@ -85,6 +86,54 @@ export const getUserTrips = async (userEmail: string) => {
 
     console.log(response.data);
     // здесь можно обработать полученные данные
+
+    return response.data;
+  } catch (error) {
+    console.error('There has been a problem with your fetch operation:', error);
+    return null;
+  }
+};
+
+
+export const getTrip = async (tripId: string) => {
+  try {
+    const user = localStorage.getItem("user");
+    const accessToken = user ? JSON.parse(user).accessToken : null;
+
+    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+
+    const response = await axios.get(`http://localhost:10000/v1/Trip/${tripId}`, {
+      headers: {
+        ...headers,
+        'Accept': 'application/json'
+      }
+    });
+
+    console.log(response.data);
+
+    return response.data;
+  } catch (error) {
+    console.error('There has been a problem with your fetch operation:', error);
+    return null;
+  }
+};
+
+export const addParticipant = async (tripId: string, userEmail: string) => {
+  try {
+    const user = localStorage.getItem("user");
+    const accessToken = user ? JSON.parse(user).accessToken : null;
+
+    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+
+    const response = await axios.post(`${API_URL_ADDPARTICIPANT}${tripId}/addparticipant`, userEmail, {
+      headers: {
+        ...headers,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json' // Установка заголовка Content-Type для POST запроса
+      }
+    });
+
+    console.log(response.data);
 
     return response.data;
   } catch (error) {
