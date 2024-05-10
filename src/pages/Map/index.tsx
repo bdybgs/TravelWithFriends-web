@@ -43,13 +43,23 @@ const Map = () => {
     };
 
     const addExpense = () => {
-        setExpenses([...expenses, { action: '', participants: '', payer: '', costPerPerson: '', totalCost: '' }]);
+        const newExpense = { id: Date.now(), action: '', participants: '', payer: '', costPerPerson: '', totalCost: '' };
+        setExpenses([...expenses, newExpense]);
         setTableRows(tableRows + 1); // Увеличиваем количество строк на 1 при добавлении траты
     };
 
-    const handleExpenseChange = (index: number, key: string, value: string) => {
-        const updatedExpenses = [...expenses];
-        updatedExpenses[index][key] = value;
+    const removeExpense = (id: number) => {
+        const updatedExpenses = expenses.filter(expense => expense.id !== id);
+        setExpenses(updatedExpenses);
+    };
+
+    const handleExpenseChange = (id: number, key: string, value: string) => {
+        const updatedExpenses = expenses.map(expense => {
+            if (expense.id === id) {
+                return { ...expense, [key]: value };
+            }
+            return expense;
+        });
         setExpenses(updatedExpenses);
     };
 
@@ -147,11 +157,12 @@ const Map = () => {
                         <tbody>
                         {paginatedExpenses.map((expense, index) => (
                             <tr key={index}>
-                                <td><Input value={expense.action} onChange={(e) => handleExpenseChange(index, 'action', e.target.value)} /></td>
-                                <td><Input value={expense.participants} onChange={(e) => handleExpenseChange(index, 'participants', e.target.value)} /></td>
-                                <td><Input value={expense.payer} onChange={(e) => handleExpenseChange(index, 'payer', e.target.value)} /></td>
-                                <td><Input type="number" value={expense.costPerPerson} onChange={(e) => handleExpenseChange(index, 'costPerPerson', e.target.value)} /></td>
-                                <td><Input type="number" value={expense.totalCost} onChange={(e) => handleExpenseChange(index, 'totalCost', e.target.value)} /></td>
+                                <td><Input value={expense.action} onChange={(e) => handleExpenseChange(expense.id, 'action', e.target.value)} /></td>
+                                <td><Input value={expense.participants} onChange={(e) => handleExpenseChange(expense.id, 'participants', e.target.value)} /></td>
+                                <td><Input value={expense.payer} onChange={(e) => handleExpenseChange(expense.id, 'payer', e.target.value)} /></td>
+                                <td><Input type="number" value={expense.costPerPerson} onChange={(e) => handleExpenseChange(expense.id, 'costPerPerson', e.target.value)} /></td>
+                                <td><Input type="number" value={expense.totalCost} onChange={(e) => handleExpenseChange(expense.id, 'totalCost', e.target.value)} /></td>
+                                <Button onClick={() => removeExpense(expense.id)}>Удалить</Button>
                             </tr>
                         ))}
                         </tbody>

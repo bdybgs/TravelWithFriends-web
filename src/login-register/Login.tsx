@@ -39,11 +39,19 @@ const Login: React.FC<Props> = () => {
     setLoading(true);
 
     login(name, password).then(
-      () => {
-        signin({ name, password }, () => {});
-        localStorage.setItem("email", name);
-        navigate("/map");
-      },
+        (response) => {
+          // Проверяем, является ли пользователь администратором
+          if (response.isAdmin || response.data || response.data.isAdmin) {
+            signin({ name, password }, () => {});
+            localStorage.setItem("email", name);
+            navigate("/admin"); // Перенаправляем администратора на страницу /admin
+          } else {
+            // Если пользователь не администратор, перенаправляем его на страницу /map
+            signin({ name, password }, () => {});
+            localStorage.setItem("email", name);
+            navigate("/map");
+          }
+        },
       (error) => {
         const resMessage =
           (error.response &&
