@@ -77,7 +77,8 @@ const App: React.FC = () => {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/" element={<Home />} />
                 <Route path="/contacts" element={<Contacts />} />
-                <Route path="/map" element={<RequireAuth><Map /></RequireAuth>} />
+                <Route path="/map/:tripId" element={<RequireAuth><Map /></RequireAuth>} />
+
                 <Route path="/login" element={<Login />} />
                 <Route path="/registration" element={<Register />} />
             </Routes>

@@ -57,7 +57,7 @@ const PublicatedTrips: React.FC = () => {
 
   const handleCreate = () => {
     if (isAuthenticated()) {
-      navigate("/map");
+      navigate("/map/000");
     } else {
       // Показать попап с надписью "Авторизуйтесь!"
       alert("Авторизуйтесь!");

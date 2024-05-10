@@ -4,13 +4,22 @@ import { TPoint } from "../../types/TPoint";
 import { DatePicker, Button, Input, Select } from 'antd';
 import './customDatePicker.css';
 import styles from "./index.module.css";
+import { useNavigate, useParams } from 'react-router-dom';
 
 import { sendEvent } from "../../utils/Metriks";
 import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
+
 const { RangePicker } = DatePicker;
 const { Option } = Select;
 
 const Map = () => {
+    const { tripId } = useParams(); // Извлекаем параметр tripId из URL
+    const navigate = useNavigate();
+    
+    // Используем tripId для установки начального значения поля для названия
+    const [title, setTitle] = useState<string>(tripId ? tripId : '');
+
+
     const [points, setPoints] = useState<TPoint[]>([]);
     const [dateRange, setDateRange] = useState<any[]>([]);
     const [expenses, setExpenses] = useState<any[]>([]); // Хранение данных таблицы
@@ -19,7 +28,6 @@ const Map = () => {
     const [currentPage, setCurrentPage] = useState<number>(1); // Текущая страница
     const itemsPerPage = 10; // Количество элементов на странице
     const blockRef = useRef<HTMLDivElement>(null);
-    const [title, setTitle] = useState<string>('');
     const [numOfParticipants, setNumOfParticipants] = useState<number>(0);
 
 
@@ -75,10 +83,6 @@ const Map = () => {
         }
     };
 
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setTitle(e.target.value); 
-    };
-
     const handleParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value, 10); // Преобразование строки в число с основанием 10
         setNumOfParticipants(value); 
@@ -119,15 +123,10 @@ const Map = () => {
             </div>
             <div className={styles.block}>
                 <div>
-                    <div>
-                        <div className={styles.textdata}>Название</div>
-                            <Input 
-                                value={title} 
-                                onChange={handleTitleChange} // Добавляем обработчик изменения значения названия
-                                className={styles.inputField} 
-                                placeholder="Введите название" 
-                            />
-                        </div>
+                <div>
+                    <div className={styles.textdata}>Название: {title}</div>
+
+                    </div>
                         <div>
                         <div className={styles.textdata}>Число участников</div>
                             <Input 

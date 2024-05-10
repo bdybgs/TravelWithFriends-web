@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 import CreatePopup from "./CreatePopup";
 import { createTrip, getCreatorId, getUserTrips } from "../../services/trip.service";
 import TripCard from "./TripCard";
+import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {
     const userEmail = localStorage.getItem("email");
@@ -12,6 +13,7 @@ const Profile: React.FC = () => {
     const [numOfParticipants, setNumOfParticipants] = useState<number>(0); 
     const [creatorId, setCreatorId] = useState<string>("");
     const [trips, setTrips] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         if (userEmail) {
@@ -60,7 +62,9 @@ const Profile: React.FC = () => {
         }
     };
     
-    
+    const handleMapClick = (tripId: string) => {
+        navigate(`/map/${tripId}`);
+    };
 
     return (
         <div className="container">
@@ -91,8 +95,7 @@ const Profile: React.FC = () => {
                         text={`City: ${trip.city}`} // Используем city в качестве текста
                         author={trip.creatorName} // Используем creatorName в качестве автора
                         onClick={() => {
-                            // Обработчик события клика на карточку
-                            // Здесь вы можете добавить действия при клике на карточку трипа
+                            handleMapClick(trip.id);
                         }}
                     />
                 ))}

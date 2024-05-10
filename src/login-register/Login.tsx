@@ -52,7 +52,7 @@ const Login: React.FC<Props> = () => {
           // Если пользователь не администратор, перенаправляем его на страницу /map
           signin({ name, password }, () => {});
           localStorage.setItem("email", name);
-          navigate("/map");
+          navigate("/profile");
         }
       },
       (error) => {
