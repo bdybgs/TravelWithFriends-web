@@ -34,7 +34,17 @@ const Map = () => {
     const itemsPerPage = 10; // Количество элементов на странице
     const blockRef = useRef<HTMLDivElement>(null);
     const [numOfParticipants, setNumOfParticipants] = useState<number>(0);
+    const [selectedDay, setSelectedDay] = useState(0);
 
+    const [currentDay, setCurrentDay] = useState(0); // Индекс текущего дня
+    const totalDays = 3; // Общее количество дней
+    
+    const [expensesByDay, setExpensesByDay] = useState<{ [key: number]: any[] }>({
+        0: [],
+        1: [],
+        2: []
+    });
+    
 
     useEffect(() => {
         setTimeout(() => {
@@ -57,11 +67,6 @@ const Map = () => {
         fetchData();
     }, [tripId]);
     
-
-    // if (isLoading) {
-    //     return <div>Loading...</div>;
-    // }
-
     useEffect(() => {
         // Получаем высоту таблицы
         const tableHeight = document.getElementById('table')?.offsetHeight || 0;
@@ -76,16 +81,22 @@ const Map = () => {
     };
 
     const addExpense = () => {
-        const newExpense = { id: Date.now(), action: '', participants: '', payer: '', costPerPerson: '', totalCost: '' };
-        setExpenses([...expenses, newExpense]);
-        setTableRows(tableRows + 1); // Увеличиваем количество строк на 1 при добавлении траты
+        const newExpense = { id: Date.now(), action: '', participants: '', payer: '', costPerPerson: '', totalCost: '', day: currentDay };
+        setExpensesByDay(prevState => ({
+            ...prevState,
+            [currentDay]: [...prevState[currentDay], newExpense]
+        }));
+        setTableRows(tableRows + 1);
     };
-
-    const removeExpense = (id: number) => {
-        const updatedExpenses = expenses.filter(expense => expense.id !== id);
-        setExpenses(updatedExpenses);
+    
+    const removeExpense = (id: number, day: number) => {
+        const updatedExpenses = expensesByDay[day].filter(expense => expense.id !== id);
+        setExpensesByDay(prevState => ({
+            ...prevState,
+            [day]: updatedExpenses
+        }));
     };
-
+    
     const handleExpenseChange = (id: number, key: string, value: string) => {
         const updatedExpenses = expenses.map(expense => {
             if (expense.id === id) {
@@ -115,8 +126,6 @@ const Map = () => {
     
     const handleAddParticipant = () => {
         if (!tripId) {
-            // Если tripId не определен, показываем сообщение об ошибке
-            // Можно использовать уведомление или другой способ оповещения пользователя
             alert('Невозможно добавить участника: tripId не определен.');
             return;
         }
@@ -127,8 +136,6 @@ const Map = () => {
             alert('Пожалуйста, введите email участника.');
             return;
         }
-    
-        // Выполняем метод addParticipant с tripId и participantEmail
         addParticipant(tripId, participantEmail)
             .then((response) => {
                 // Обновляем данные о трипе после успешного добавления участника
@@ -172,8 +179,7 @@ const Map = () => {
 
     return (
 
-        <div className={styles.container}>
-            {/* Выбор команды */}
+        <div className={styles.container}>            
             <div className={styles.mapContainer}>
                 <YandexMap points={points} />
             </div>
@@ -203,6 +209,8 @@ const Map = () => {
                 </div>
                 <div className={styles.tableContainer}>
                     <table className={styles.table} id="table">
+                    <div>День {currentDay + 1}</div>
+
                         <thead>
                         <tr>
                             <th>Действие</th>
@@ -213,28 +221,31 @@ const Map = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {paginatedExpenses.map((expense, index) => (
+                        {expensesByDay[currentDay].map((expense, index) => (
                             <tr key={index}>
                                 <td><Input value={expense.action} onChange={(e) => handleExpenseChange(expense.id, 'action', e.target.value)} /></td>
                                 <td><Input value={expense.participants} onChange={(e) => handleExpenseChange(expense.id, 'participants', e.target.value)} /></td>
                                 <td><Input value={expense.payer} onChange={(e) => handleExpenseChange(expense.id, 'payer', e.target.value)} /></td>
                                 <td><Input type="number" value={expense.costPerPerson} onChange={(e) => handleExpenseChange(expense.id, 'costPerPerson', e.target.value)} /></td>
                                 <td><Input type="number" value={expense.totalCost} onChange={(e) => handleExpenseChange(expense.id, 'totalCost', e.target.value)} /></td>
-                                <Button onClick={() => removeExpense(expense.id)}>Удалить</Button>
+                                <Button onClick={() => removeExpense(expense.id, currentDay)}>Удалить</Button>
                             </tr>
                         ))}
+
                         </tbody>
                     </table>
                     <Button onClick={addExpense} className={styles.tablebutton}>Добавить трату</Button>
+
+                    <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
+                        <i className="fas fa-chevron-left"></i>
+                    </Button>
+                    <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
+                        <i className="fas fa-chevron-right"></i>
+                    </Button>
+
+
                 </div>
-                {/* <Select defaultValue=""
-                        className={styles.customSelect}
-                        onChange={(value) => setSelectedTeam(value)}>
-                    <Option value="">Выберите команду</Option>
-                    <Option value="team1">Команда 1</Option>
-                    <Option value="team2">Команда 2</Option>
-                    <Option value="team3">Команда 3</Option>
-                </Select> */}
+
                 <div className={styles.buttonsContainer}>
                     <Button type="primary" style={{ backgroundColor: '#00B58A' }}>Сохранить</Button>
                     <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickStatistic}>Статистика</Button>
