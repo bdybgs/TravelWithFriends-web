@@ -20,6 +20,8 @@ const API_URL_TRIPS = "http://localhost:10000/v1/Trip/";
 //const API_URL_ACCOUNTS = "https://localhost:7084/v1/Accounts/getid/";
 const API_URL_ACCOUNTS = "http://localhost:10000/v1/Accounts/getid/";
 
+const API_URL_USERTRIPS = "http://localhost:10000/v1/Trip/usertrips/";
+
 
 export const createTrip = (tripData: TripData) => {
   // Получаем токен доступа из локального хранилища
@@ -61,7 +63,32 @@ export const getCreatorId = (creatorEmail: string) => {
       console.error("Ошибка при получении идентификатора создателя:", error);
       throw error;
     });
-  //return "asas";
+
 };
 
+export const getUserTrips = async (userEmail: string) => {
+  try {
+    // Получаем токен доступа из локального хранилища
+    const user = localStorage.getItem("user");
+    const accessToken = user ? JSON.parse(user).accessToken : null;
 
+    // Если токен доступа есть, добавляем его в заголовок Authorization
+    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+
+    // Отправляем GET-запрос 
+    const response = await axios.get(API_URL_USERTRIPS + encodeURIComponent(userEmail), {
+      headers: {
+        ...headers,
+        'Accept': 'application/json'
+      }
+    });
+
+    console.log(response.data);
+    // здесь можно обработать полученные данные
+
+    return response.data;
+  } catch (error) {
+    console.error('There has been a problem with your fetch operation:', error);
+    return null;
+  }
+};
