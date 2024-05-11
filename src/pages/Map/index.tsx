@@ -6,46 +6,35 @@ import './customDatePicker.css';
 import styles from "./index.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { getTrip, addParticipant } from "../../services/trip.service";
+import { getTrip, addParticipant, getDays, getCategories, getActiviesByDay } from "../../services/trip.service";
 
 import { sendEvent } from "../../utils/Metriks";
-import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
 import ExpenseTable from './ExpenseTable';
-const { RangePicker } = DatePicker;
-const { Option } = Select;
+import Statistics from './Statistics';
 
 const Map = () => {
     const { tripId } = useParams(); // Извлекаем параметр tripId из URL
-    const navigate = useNavigate();
-    
+
     const [tripData, setTripData] = useState<any>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
-
-    // Используем tripId для установки начального значения поля для названия
-    const [title, setTitle] = useState<string>(tripId ? tripId : '');
     const [participantEmail, setParticipantEmail] = useState<string>('');
 
     const [points, setPoints] = useState<TPoint[]>([]);
-    const [dateRange, setDateRange] = useState<any[]>([]);
     const [expenses, setExpenses] = useState<any[]>([]); // Хранение данных таблицы
     const [tableRows, setTableRows] = useState<number>(0); // Количество строк в таблице
-    const [selectedTeam, setSelectedTeam] = useState<string>(''); // Выбранная команда
-    const [currentPage, setCurrentPage] = useState<number>(1); // Текущая страница
-    const itemsPerPage = 10; // Количество элементов на странице
+   
     const blockRef = useRef<HTMLDivElement>(null);
-    const [numOfParticipants, setNumOfParticipants] = useState<number>(0);
-    const [selectedDay, setSelectedDay] = useState(0);
+
 
     const [currentDay, setCurrentDay] = useState(0); // Индекс текущего дня
-    const totalDays = 3; // Общее количество дней
+    const [totalDays, setTotalDays] = useState<number>(3);
     
-    const [expensesByDay, setExpensesByDay] = useState<{ [key: number]: any[] }>({
-        0: [],
-        1: [],
-        2: []
-    });
+    // Добавляем состояние для хранения соответствия между индексами дней и их GUID'ами
+    const [dayGuids, setDayGuids] = useState<{ [key: number]: string }>({});
+        
+    // Изменения в expensesByDay: теперь используем GUID дня в качестве ключа
+    const [expensesByDay, setExpensesByDay] = useState<{ [key: string]: any[] }>({});
     
-
     useEffect(() => {
         setTimeout(() => {
             setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
@@ -67,6 +56,70 @@ const Map = () => {
         fetchData();
     }, [tripId]);
     
+
+ // useEffect для получения дней и создания соответствия между индексами и GUID'ами
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (!tripId || tripId === '000') return;
+
+                const trip = await getTrip(tripId);
+                setTripData(trip);
+                setIsLoading(false);
+
+                const days = await getDays(tripId);
+
+                // Создаем объект для хранения соответствия между индексами дней и GUID'ами
+                const dayGuidsObject: { [key: number]: string } = {};
+                days.forEach((dayGuid: string, index: number) => {
+                    dayGuidsObject[index] = dayGuid;
+                });
+                setDayGuids(dayGuidsObject);
+
+                // Создаем пустые массивы расходов для каждого дня, используя GUID дня в качестве ключа
+                const expensesByDayObject: { [key: string]: any[] } = {};
+                days.forEach((dayGuid: string) => {
+                    expensesByDayObject[dayGuid] = [];
+                });
+                setExpensesByDay(expensesByDayObject);
+
+                // Обновляем общее количество дней после получения данных с сервера
+                setTotalDays(days.length);
+            } catch (error) {
+                console.error('Ошибка при получении данных о поездке:', error);
+            }
+        };
+
+        fetchData();
+    }, [tripId]);
+
+    // useEffect для загрузки активностей текущего дня
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (!tripId || tripId === '000') return;
+
+                const activities = await getActiviesByDay(dayGuids[currentDay]); // Используем GUID дня для запроса активностей
+
+                // Обновляем состояние expensesByDay для текущего дня с полученными активностями
+                setExpensesByDay(prevState => ({
+                    ...prevState,
+                    [dayGuids[currentDay]]: activities
+                }));
+                
+                // Обновляем количество строк в таблице в зависимости от количества активностей
+                setTableRows(activities.length);
+            } catch (error) {
+                console.error('Ошибка при получении активностей для дня:', error);
+            }
+        };
+
+        fetchData();
+    }, [currentDay, dayGuids]);
+
+
+
+
     useEffect(() => {
         // Получаем высоту таблицы
         const tableHeight = document.getElementById('table')?.offsetHeight || 0;
@@ -76,9 +129,7 @@ const Map = () => {
         }
     }, [tableRows]);
 
-    const handleDateChange = (dates: any) => {
-        setDateRange(dates);
-    };
+
 
     const addExpense = () => {
         const newExpense = { id: Date.now(), action: '', participants: '', payer: '', costPerPerson: '', totalCost: '', day: currentDay };
@@ -119,10 +170,7 @@ const Map = () => {
         }
     };
 
-    const handleParticipantsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = parseInt(e.target.value, 10); // Преобразование строки в число с основанием 10
-        setNumOfParticipants(value); 
-    };
+
     
     const handleAddParticipant = () => {
         if (!tripId) {
@@ -167,16 +215,6 @@ const Map = () => {
         { name: 'Прочее', value: 2000 },
     ];
 
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
-
-    // Функция для изменения текущей страницы
-    const handlePageChange = (page: number) => {
-        setCurrentPage(page);
-    };
-
-    // Фильтрация данных для отображения на текущей странице
-    const paginatedExpenses = expenses.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
-
     return (
 
         <div className={styles.container}>            
@@ -203,12 +241,8 @@ const Map = () => {
                     </div>
 
                     <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
-                    {/* <div className={styles.datePicker}><RangePicker onChange={handleDateChange} />
-                    </div> */}
-
                 </div>
                 <div >
-                {/* <div className={styles.tableContainer}> */}
                     <ExpenseTable
                         expenses={expensesByDay[currentDay]}
                         currentDay={currentDay}
@@ -216,16 +250,12 @@ const Map = () => {
                         removeExpense={removeExpense}
                         handleExpenseChange={handleExpenseChange}
                     />
-
-                <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
-                    <FaChevronLeft style={{ color: 'black' }} />
-                </Button>
-                <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
-                    <FaChevronRight style={{ color: 'black' }} />
-                </Button>
-
-
-
+                    <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
+                        <FaChevronLeft style={{ color: 'black' }} />
+                    </Button>
+                    <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
+                        <FaChevronRight style={{ color: 'black' }} />
+                    </Button>
                 </div>
 
                 <div className={styles.buttonsContainer}>
@@ -234,56 +264,10 @@ const Map = () => {
                 </div>
             </div>
 
-            <div id="statisticElement" className={styles.fullWidthContainer}>
-                <>
-                    <div className={styles.fullWidthContent}>
-                        <div className={styles.chartContainer}>
-                            <div>
-                                <h3>Расходы по команде</h3>
-                                <PieChart width={400} height={400}>
-                                    <Pie dataKey="value" isAnimationActive={false} data={teamExpensesData} cx={200} cy={200} outerRadius={80} fill="#8884d8" label>
-                                        {teamExpensesData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Legend />
-                                    <Tooltip />
-                                </PieChart>
-                            </div>
-                            <div className={styles.legendContainer}>
-                                {teamExpensesData.map((entry, index) => (
-                                    <div key={`legend-${index}`}>
-                                        <span className={styles.legendColor} style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
-                                        <span>{entry.name}: {entry.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className={styles.chartContainer}>
-                            <div>
-                                <h3>Расходы по категориям</h3>
-                                <PieChart width={400} height={400}>
-                                    <Pie dataKey="value" isAnimationActive={false} data={categoryExpensesData} cx={200} cy={200} outerRadius={80} fill="#8884d8" label>
-                                        {categoryExpensesData.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                        ))}
-                                    </Pie>
-                                    <Legend />
-                                    <Tooltip />
-                                </PieChart>
-                            </div>
-                            <div className={styles.legendContainer}>
-                                {categoryExpensesData.map((entry, index) => (
-                                    <div key={`legend-${index}`}>
-                                        <span className={styles.legendColor} style={{ backgroundColor: COLORS[index % COLORS.length] }}></span>
-                                        <span>{entry.name}: {entry.value}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </>
-            </div>
+            <Statistics
+                teamExpensesData={teamExpensesData}
+                categoryExpensesData={categoryExpensesData}
+            />
         </div>
     );
 };

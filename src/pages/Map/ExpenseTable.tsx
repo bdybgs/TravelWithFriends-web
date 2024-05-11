@@ -40,7 +40,7 @@ const ExpenseTable: React.FC<Props> = ({
           </tr>
         </thead>
         <tbody>
-          {expenses.map((expense, index) => (
+          {expenses && expenses.map((expense, index) => (
             <tr key={index}>
               <td>
                 <Input
@@ -74,7 +74,9 @@ const ExpenseTable: React.FC<Props> = ({
                   onChange={(e) => handleExpenseChange(expense.id, 'totalCost', e.target.value)}
                 />
               </td>
-              <Button onClick={() => removeExpense(expense.id, currentDay)}>х</Button>
+              <td>
+                <Button onClick={() => removeExpense(expense.id, currentDay)}>х</Button>
+              </td>
             </tr>
           ))}
         </tbody>
