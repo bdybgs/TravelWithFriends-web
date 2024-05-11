@@ -6,8 +6,8 @@ import './customDatePicker.css';
 import styles from "./index.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
-import { getTrip, addParticipant, getDays, getCategories, getActiviesByDay } from "../../services/trip.service";
-
+import { getTrip, addParticipant, getDays, getCategories} from "../../services/trip.service";
+import { getActiviesByDay } from "../../services/activity.service";
 import { sendEvent } from "../../utils/Metriks";
 import ExpenseTable from './ExpenseTable';
 import Statistics from './Statistics';
@@ -129,17 +129,36 @@ const Map = () => {
         }
     }, [tableRows]);
 
-
-
     const addExpense = () => {
-        const newExpense = { id: Date.now(), action: '', participants: '', payer: '', costPerPerson: '', totalCost: '', day: currentDay };
-        setExpensesByDay(prevState => ({
-            ...prevState,
-            [currentDay]: [...prevState[currentDay], newExpense]
-        }));
+        const newExpense = { 
+            id: Date.now(), 
+            title: '', 
+            categoryTitle: '', 
+            participants: '', 
+            payers: '', 
+            pricePerOne: '', 
+            totalPrice: '', 
+            day: currentDay 
+        };
+        
+        if (!expensesByDay[dayGuids[currentDay]]) {
+            setExpensesByDay(prevState => ({
+                ...prevState,
+                [dayGuids[currentDay]]: [newExpense]
+            }));
+        } else {
+            setExpensesByDay(prevState => ({
+                ...prevState,
+                [dayGuids[currentDay]]: [...prevState[dayGuids[currentDay]], newExpense]
+            }));
+        }
+
+        // Обновляем состояние expenses, передавая новый массив расходов
+        setExpenses([...expenses, newExpense]);
+
         setTableRows(tableRows + 1);
     };
-    
+          
     const removeExpense = (id: number, day: number) => {
         const updatedExpenses = expensesByDay[day].filter(expense => expense.id !== id);
         setExpensesByDay(prevState => ({
@@ -249,7 +268,8 @@ const Map = () => {
                         addExpense={addExpense}
                         removeExpense={removeExpense}
                         handleExpenseChange={handleExpenseChange}
-                        />
+                    />
+
                     <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
                         <FaChevronLeft style={{ color: 'black' }} />
                     </Button>

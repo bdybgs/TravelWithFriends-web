@@ -1,14 +1,16 @@
 import React from 'react';
 import { Button, Input } from 'antd';
+import { Formik, Form, Field } from 'formik';
 import styles from './index.module.css'; // Импорт стилей
 
 interface Expense {
   id: number;
-  action: string;
+  title: string;
+  categoryTitle: string;
   participants: string;
-  payer: string; // Добавили плательщика
-  costPerPerson: string;
-  totalCost: string;
+  payers: string;
+  pricePerOne: string;
+  totalPrice: string;
 }
 
 interface Props {
@@ -32,7 +34,8 @@ const ExpenseTable: React.FC<Props> = ({
         <div>День {currentDay + 1}</div>
         <thead>
           <tr>
-            <th>Действие</th>
+            <th>Название</th>
+            <th>Категория</th>
             <th>Участники</th>
             <th>Оплачивал</th>
             <th>За одного</th>
@@ -43,35 +46,41 @@ const ExpenseTable: React.FC<Props> = ({
           {expenses && expenses.map((expense, index) => (
             <tr key={index}>
               <td>
-                <Input
-                  value={expense.action}
-                  onChange={(e) => handleExpenseChange(expense.id, 'action', e.target.value)}
+                <Field
+                  as={Input}
+                  name={`expenses[${index}].title`}
                 />
               </td>
               <td>
-                <Input
-                  value={expense.participants}
-                  onChange={(e) => handleExpenseChange(expense.id, 'participants', e.target.value)}
+                <Field
+                  as={Input}
+                  name={`expenses[${index}].categoryTitle`}
                 />
               </td>
               <td>
-                <Input
-                  value={expense.payer}
-                  onChange={(e) => handleExpenseChange(expense.id, 'payer', e.target.value)} // Добавлен обработчик изменения плательщика
+                <Field
+                  as={Input}
+                  name={`expenses[${index}].participants`}
                 />
               </td>
               <td>
-                <Input
+                <Field
+                  as={Input}
+                  name={`expenses[${index}].payers`}
+                />
+              </td>
+              <td>
+                <Field
+                  as={Input}
                   type="number"
-                  value={expense.costPerPerson}
-                  onChange={(e) => handleExpenseChange(expense.id, 'costPerPerson', e.target.value)}
+                  name={`expenses[${index}].pricePerOne`}
                 />
               </td>
               <td>
-                <Input
+                <Field
+                  as={Input}
                   type="number"
-                  value={expense.totalCost}
-                  onChange={(e) => handleExpenseChange(expense.id, 'totalCost', e.target.value)}
+                  name={`expenses[${index}].totalPrice`}
                 />
               </td>
               <td>
@@ -88,4 +97,23 @@ const ExpenseTable: React.FC<Props> = ({
   );
 };
 
-export default ExpenseTable;
+const ExpenseTableFormik: React.FC<Props> = (props) => {
+  const initialValues = {
+    expenses: props.expenses,
+  };
+
+  const handleSubmit = (values: any) => {
+    // Обработка отправки формы
+  };
+
+  return (
+    <Formik initialValues={initialValues} onSubmit={handleSubmit}>
+      <Form>
+        <ExpenseTable {...props} />
+        <button type="submit" style={{ display: 'none' }} />
+      </Form>
+    </Formik>
+  );
+};
+
+export default ExpenseTableFormik;

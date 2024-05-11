@@ -28,7 +28,7 @@ const API_URL_GETDAYS = "http://localhost:10000/v1/Trip/getdays/";
 
 const API_URL_GETCATEGORIES = "http://localhost:10000/v1/Category/";
 
-const API_URL_GETACTSBYDAY = "http://localhost:10000/v1/Activity/day/";
+
 
 export const createTrip = (tripData: TripData) => {
   // Получаем токен доступа из локального хранилища
@@ -197,31 +197,3 @@ export const getCategories = async () => {
 };
 
 
-export const getActiviesByDay = async (dayId: string) => {
-  try {
-    console.log("Гуид дня: " + dayId);
-    const user = localStorage.getItem("user");
-    const accessToken = user ? JSON.parse(user).accessToken : null;
-
-    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
-
-    const response = await axios.get(`${API_URL_GETACTSBYDAY}${dayId}`, {
-      headers: {
-        ...headers,
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      }
-    });
-
-    // Выводим активности в консоль
-    console.log("Активности в дне:");
-    response.data.forEach((activity: any) => {
-      console.log(activity);
-    });
-
-    return response.data;
-  } catch (error) {
-    console.error('There has been a problem with your fetch operation:', error);
-    return null;
-  }
-};
