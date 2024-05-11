@@ -244,12 +244,12 @@ const Map = () => {
                 </div>
                 <div >
                     <ExpenseTable
-                        expenses={expensesByDay[currentDay]}
+                        expenses={expensesByDay[dayGuids[currentDay]]} 
                         currentDay={currentDay}
                         addExpense={addExpense}
                         removeExpense={removeExpense}
                         handleExpenseChange={handleExpenseChange}
-                    />
+                        />
                     <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
                         <FaChevronLeft style={{ color: 'black' }} />
                     </Button>

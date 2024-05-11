@@ -6,7 +6,7 @@ interface Expense {
   id: number;
   action: string;
   participants: string;
-  payer: string;
+  payer: string; // Добавили плательщика
   costPerPerson: string;
   totalCost: string;
 }
@@ -57,7 +57,7 @@ const ExpenseTable: React.FC<Props> = ({
               <td>
                 <Input
                   value={expense.payer}
-                  onChange={(e) => handleExpenseChange(expense.id, 'payer', e.target.value)}
+                  onChange={(e) => handleExpenseChange(expense.id, 'payer', e.target.value)} // Добавлен обработчик изменения плательщика
                 />
               </td>
               <td>
