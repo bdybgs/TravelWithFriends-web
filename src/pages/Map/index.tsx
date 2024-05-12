@@ -169,11 +169,11 @@ const Map = () => {
     };
           
     const removeExpense = (id: number, day: number) => {
-        const updatedExpenses = expensesByDay[day].filter(expense => expense.id !== id);
-        setExpensesByDay(prevState => ({
-            ...prevState,
-            [day]: updatedExpenses
-        }));
+        // const updatedExpenses = expensesByDay[day].filter((expense: any) => expense.id !== id);
+        // setExpensesByDay(prevState => ({
+        //     ...prevState,
+        //     [day]: updatedExpenses
+        // }));
     };
     
     const handleExpenseChange = (id: number, key: string, value: string) => {

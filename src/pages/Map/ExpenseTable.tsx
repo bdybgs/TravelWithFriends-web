@@ -3,7 +3,7 @@ import { Button, Input, Select } from 'antd';
 import styles from './index.module.css'; // Импорт стилей
 import { getCategories } from "../../services/trip.service";
 import { SaveOutlined, DeleteOutlined  } from '@ant-design/icons';
-import { addActiviesByDay, ActivityData  } from "../../services/activity.service";
+import { addActiviesByDay, ActivityData, deleteActivity  } from "../../services/activity.service";
 
 interface Expense {
   id: number;
@@ -106,15 +106,13 @@ const ExpenseTable: React.FC<Props> = ({
   };
 
   const handleSave = async (index: number) => {
-    const expense = expenseModels[index]; // Используем обновленную модель
+    const expense = expenseModels[index]; 
 
-    //тут добавь вывод в консоль всех моделей,и пусть выводится дополнительно модель с нужным индексом.
+      // Выводим все модели данных в консоль
+    console.log('All Expense Models:', expenseModels);
 
-    // Выводим все модели данных в консоль
-  console.log('All Expense Models:', expenseModels);
-
-  // Выводим модель данных, которая будет использоваться для сохранения
-  console.log(`Model for saving expense ${index + 1}:`, expense);
+    // Выводим модель данных, которая будет использоваться для сохранения
+    console.log(`Model for saving expense ${index + 1}:`, expense);
 
     // Проверяем, что все ячейки строки таблицы не пустые
     if (!expense.title) {
@@ -167,10 +165,31 @@ const ExpenseTable: React.FC<Props> = ({
     }
   };
 
+  const [deletedRows, setDeletedRows] = useState<number[]>([]);
+
+  const handleDelete = async (expense: Expense) => {
+    // Паттерн для проверки формата id траты
+    const idPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    
+    // Проверяем, соответствует ли id траты заданному паттерну
+    if (idPattern.test(expense.id.toString())) {
+      console.log('Удаляем трату из базы данных');
+      try {
+        await deleteActivity(expense.id.toString());
+        console.log('Трата успешно удалена из базы данных');
+      } catch (error) {
+        console.error('Ошибка удаления траты из базы данных:', error);
+      }
+    } 
+      console.log('Просто удаляем строку из таблицы');
+      removeExpense(expense.id, currentDay);
+      setDeletedRows([...deletedRows, expense.id]); // Добавляем id удаленной строки    
+  };
+    
   return (
     <div className={styles.tableContainer}>
       <table className={styles.table} id="table">
-      <div>День {currentDay + 1}, GUID: {dayGuid}</div>
+      <div>День {currentDay + 1}</div>
 
         {/* <Input placeholder="Basic usage" />
         <Input defaultValue={expense.dayGuid} /> */}
@@ -186,6 +205,7 @@ const ExpenseTable: React.FC<Props> = ({
         </thead>
         <tbody>
           {expenses && expenses.map((expense, index) => (
+            !deletedRows.includes(expense.id) &&
             <tr key={index}>
               <td>
                 <Input
@@ -248,7 +268,7 @@ const ExpenseTable: React.FC<Props> = ({
                 <Button onClick={() => handleSave(index)} icon={<SaveOutlined />} />
               </td>
               <td>
-                <Button onClick={() => removeExpense(expense.id, currentDay)} icon={<DeleteOutlined />} />
+                <Button onClick={() => handleDelete(expense)} icon={<DeleteOutlined />} />
               </td>
             </tr>
           ))}

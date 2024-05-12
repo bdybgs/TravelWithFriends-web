@@ -63,3 +63,25 @@ export const getActiviesByDay = async (dayId: string) => {
       return null;
     }
   };
+
+  export const deleteActivity= async (actId: string) => {
+    try {
+      
+      const user = localStorage.getItem("user");
+      const accessToken = user ? JSON.parse(user).accessToken : null;
+  
+      const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+  
+      const response = await axios.delete(`${API_URL_ADDACT}${actId}`, {
+        headers: {
+          ...headers,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('There has been a problem with delete activity:', error);
+      return null;
+    }
+  };
