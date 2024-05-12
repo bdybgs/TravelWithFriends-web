@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import YandexMap from "../../components/YandexMap";
 import { TPoint } from "../../types/TPoint";
-import { DatePicker, Button, Input, Select } from 'antd';
+import Select from 'react-select';
+
+import { DatePicker, Button, Input } from 'antd';
 import './customDatePicker.css';
 import styles from "./index.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
@@ -34,6 +36,8 @@ const Map = () => {
         
     // Изменения в expensesByDay: теперь используем GUID дня в качестве ключа
     const [expensesByDay, setExpensesByDay] = useState<{ [key: string]: any[] }>({});
+
+    const [totalparticipants, setTotalParticipants] = useState<string[]>([]);
     
     useEffect(() => {
         setTimeout(() => {
@@ -117,7 +121,12 @@ const Map = () => {
         fetchData();
     }, [currentDay, dayGuids]);
 
-
+    useEffect(() => {
+        // Проверяем, есть ли данные о поездке
+        if (tripData.participants) {
+            setTotalParticipants(tripData.participants);
+        }
+    }, [tripData.participants]);
 
 
     useEffect(() => {
@@ -237,9 +246,9 @@ const Map = () => {
     return (
 
         <div className={styles.container}>            
-            <div className={styles.mapContainer}>
+            {/* <div className={styles.mapContainer}>
                 <YandexMap points={points} />
-            </div>
+            </div> */}
             <div className={styles.block}>
                 
                 <div>
@@ -268,6 +277,8 @@ const Map = () => {
                         addExpense={addExpense}
                         removeExpense={removeExpense}
                         handleExpenseChange={handleExpenseChange}
+                        totalparticipants={totalparticipants}
+                        dayGuid={dayGuids[currentDay]}
                     />
 
                     <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>

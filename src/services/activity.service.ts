@@ -3,7 +3,7 @@ import axios from "axios";
 const API_URL_GETACTSBYDAY = "http://localhost:10000/v1/Activity/day/";
 const API_URL_ADDACT = "http://localhost:10000/v1/Activity/";
 
-interface ActivityData {
+export interface ActivityData {
     dayId: string;
     title: string;
     categoryId: string;
