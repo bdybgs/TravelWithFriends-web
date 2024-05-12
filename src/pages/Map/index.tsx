@@ -9,7 +9,7 @@ import styles from "./index.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getTrip, addParticipant, getDays, getCategories} from "../../services/trip.service";
-import { getActiviesByDay } from "../../services/activity.service";
+import { getActiviesByDay,getStat } from "../../services/activity.service";
 import { sendEvent } from "../../utils/Metriks";
 import ExpenseTable from './ExpenseTable';
 import Statistics from './Statistics';
@@ -31,6 +31,9 @@ const Map = () => {
     const [currentDay, setCurrentDay] = useState(0); // Индекс текущего дня
     const [totalDays, setTotalDays] = useState<number>(3);
     
+    const [teamExpensesData, setTeamExpensesData] = useState([]);
+    const [categoryExpensesData, setCategoryExpensesData] = useState([]);
+
     // Добавляем состояние для хранения соответствия между индексами дней и их GUID'ами
     const [dayGuids, setDayGuids] = useState<{ [key: number]: string }>({});
         
@@ -82,9 +85,9 @@ const Map = () => {
 
                 // Создаем пустые массивы расходов для каждого дня, используя GUID дня в качестве ключа
                 const expensesByDayObject: { [key: string]: any[] } = {};
-                days.forEach((dayGuid: string) => {
+                days.forEach((dayGuid: string) => {                    
                     expensesByDayObject[dayGuid] = [];
-                });
+                });                
                 setExpensesByDay(expensesByDayObject);
 
                 // Обновляем общее количество дней после получения данных с сервера
@@ -110,7 +113,7 @@ const Map = () => {
                     ...prevState,
                     [dayGuids[currentDay]]: activities
                 }));
-                
+                console.log("внутри юзэффекта: "+ activities.length)
                 // Обновляем количество строк в таблице в зависимости от количества активностей
                 setTableRows(activities.length);
             } catch (error) {
@@ -119,6 +122,7 @@ const Map = () => {
         };
 
         fetchData();
+        console.log("expensesByDay после обновления:", expensesByDay[dayGuids[currentDay]]);
     }, [currentDay, dayGuids]);
 
     useEffect(() => {
@@ -137,6 +141,28 @@ const Map = () => {
             blockRef.current.style.height = `calc(${tableHeight}px + 20px )` + 7000; // Добавляем немного дополнительной высоты
         }
     }, [tableRows]);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                if (!tripId || tripId === '000') return;
+    
+                const statData = await getStat(tripId);
+                console.log("Статистика получена:", statData);
+                if (statData) {
+                    setTeamExpensesData(statData.teamExpensesData);
+                    setCategoryExpensesData(statData.categoryExpensesData);
+                } else {
+                    console.log("Данные статистики пусты.");
+                }
+            } catch (error) {
+                console.error('Error fetching statistics:', error);
+            }
+        };
+    
+        fetchData();
+    }, [tripId]);
+    
 
     const addExpense = () => {
         const newExpense = { 
@@ -169,11 +195,6 @@ const Map = () => {
     };
           
     const removeExpense = (id: number, day: number) => {
-        // const updatedExpenses = expensesByDay[day].filter((expense: any) => expense.id !== id);
-        // setExpensesByDay(prevState => ({
-        //     ...prevState,
-        //     [day]: updatedExpenses
-        // }));
     };
     
     const handleExpenseChange = (id: number, key: string, value: string) => {
@@ -186,17 +207,34 @@ const Map = () => {
         setExpenses(updatedExpenses);
     };
 
-    const handleClickStatistic = () => {
+    const handleClickStatistic = async () => {
         sendEvent('reachGoal', 'StatisticButtonClick');
         const fullWidthContainer = document.querySelector('.fullWidthContainer');
-
+    
         const statisticElement = document.getElementById('statisticElement');
-
+    
         // Если элемент найден, прокручиваем страницу до него
         if (statisticElement) {
             statisticElement.scrollIntoView({ behavior: 'smooth' });
         }
+    
+        try {
+            if (!tripId || tripId === '000') return;
+    
+            const statData = await getStat(tripId);
+            console.log("Статистика получена:", statData);
+            if (statData) {
+                setTeamExpensesData(statData.teamExpensesData);
+                setCategoryExpensesData(statData.categoryExpensesData);
+            } else {
+                console.log("Данные статистики пусты.");
+            }
+        } catch (error) {
+            console.error('Error fetching statistics:', error);
+        }
     };
+    
+    
 
 
     
@@ -227,28 +265,12 @@ const Map = () => {
             });
     };
     
-
-    // Данные для диаграммы "Расходы по команде"
-    const teamExpensesData = [
-        { name: 'Вася', value: 10000 },
-        { name: 'Петя', value: 7000 },
-        { name: 'Дима', value: 3000 },
-    ];
-
-    // Данные для диаграммы "Расходы по категориям"
-    const categoryExpensesData = [
-        { name: 'Жилье', value: 10000 },
-        { name: 'Еда', value: 5000 },
-        { name: 'Экскурсия', value: 3000 },
-        { name: 'Прочее', value: 2000 },
-    ];
-
     return (
 
         <div className={styles.container}>            
-            {/* <div className={styles.mapContainer}>
+            <div className={styles.mapContainer}>
                 <YandexMap points={points} />
-            </div> */}
+            </div>
             <div className={styles.block}>
                 
                 <div>

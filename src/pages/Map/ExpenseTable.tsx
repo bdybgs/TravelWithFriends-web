@@ -3,7 +3,7 @@ import { Button, Input, Select } from 'antd';
 import styles from './index.module.css'; // Импорт стилей
 import { getCategories } from "../../services/trip.service";
 import { SaveOutlined, DeleteOutlined  } from '@ant-design/icons';
-import { addActiviesByDay, ActivityData, deleteActivity  } from "../../services/activity.service";
+import { addActiviesByDay, ActivityData, deleteActivity, updateActivity, getStat, UpdateActivityData  } from "../../services/activity.service";
 
 interface Expense {
   id: number;
@@ -114,6 +114,7 @@ const ExpenseTable: React.FC<Props> = ({
     // Выводим модель данных, которая будет использоваться для сохранения
     console.log(`Model for saving expense ${index + 1}:`, expense);
 
+
     // Проверяем, что все ячейки строки таблицы не пустые
     if (!expense.title) {
       console.error('Title field must be filled');
@@ -143,6 +144,46 @@ const ExpenseTable: React.FC<Props> = ({
     // Проверяем, что expense.participants является строкой, а не массивом строк
     const participants = Array.isArray(expense.participants) ? expense.participants : [expense.participants];
 
+
+    const idPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+    if (idPattern.test(expense.id.toString())) {
+      const activityId = expense.id;
+
+      console.log("participants: "+expense.participants);
+//при изменении траты, которая уже в бд, изменения не сохраняются из-за participants и payers
+      const requestData = {
+        title: expense.title,
+        categoryId: categories.find(category => category.title === expense.categoryTitle)?.id,
+        pricePerOne: parseFloat(expense.pricePerOne),
+        totalPrice: parseFloat(expense.totalPrice),
+        participants: participants.join(',').split(',').map(participant => participant.trim()),
+        payers: [expense.payers]
+      };
+
+      // const requestData = {
+      //   title: expense.title,
+      //   categoryId: categories.find(category => category.title === expense.categoryTitle)?.id,
+      //   pricePerOne: parseFloat(expense.pricePerOne),
+      //   totalPrice: parseFloat(expense.totalPrice),
+      //   participants: [
+      //     'maria@twf.com'
+      //   ],
+      //   payers: [expense.payers]
+      // };
+
+      console.log("ID: "+expense.id);
+      console.log('Activity Data to update:', requestData);
+      try {
+        // Отправляем данные на сервер
+        await updateActivity(activityId.toString(), requestData);
+        console.log('Expense updated successfully');
+      } catch (error) {
+        console.error('Error updating expense:', error);
+      }
+      return;
+    }
+    console.log("ID: "+expense.id);
     // Собираем данные для отправки на сервер
     const data: ActivityData = {
       dayId: dayGuid,
