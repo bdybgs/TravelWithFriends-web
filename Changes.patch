@@ -1,0 +1,1062 @@
+Index: src/pages/Login/index.tsx
+===================================================================
+diff --git a/src/pages/Login/index.tsx b/src/pages/Login/index.tsx
+deleted file mode 100644
+--- a/src/pages/Login/index.tsx	
++++ /dev/null	
+@@ -1,25 +0,0 @@
+-import React, {ReactNode} from "react";
+-import {useLocation, useNavigate} from "react-router-dom";
+-import App from "../../App";
+-import {inspect} from "util";
+-import styles from "../../login-register/index.module.css"
+-import logo from "./logo.webp";
+-
+-const Login = () => {
+-    const navigate = useNavigate();
+-    const location = useLocation();
+-
+-    const fromPage = location.state?.from?.pathname || '/';
+-
+-    return (
+-
+-            <div className={styles.container}>
+-                <img src={logo} alt="Логотип" className={styles.picture}/>
+-                <h1 className={styles.enter}>Войти в аккаунт</h1>
+-                <button className={styles.button}>Войти</button>
+-            {fromPage}
+-            </div>
+-    )
+-}
+-
+-export {Login}
+\ No newline at end of file
+Index: src/App.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/App.tsx b/src/App.tsx
+--- a/src/App.tsx	
++++ b/src/App.tsx	
+@@ -1,4 +1,4 @@
+-import React from 'react';
++import React, {useContext} from 'react';
+ import './App.css';
+ import { useState, useEffect } from "react";
+ import Map from "./pages/Map";
+@@ -7,13 +7,10 @@
+ import Header from "./components/Header";
+ import About from "./pages/About";
+ import PublicatedTrips from "./pages/PublicatedTrips";
++import AdminPanel from "./pages/admin-panel";
+ import Profile from "./pages/Profile";
+-
+-//import { Login } from "./pages/Login";
+ import { RequireAuth } from "./hoc/RequireAuth";
+-import { Routes, Route, useLocation, Link } from "react-router-dom"
+-import {AuthProvider} from "./hoc/AuthProvider";
+-import RegistrationPage from "./pages/Registration";
++import {Routes, Route, useLocation, Link, Navigate} from "react-router-dom"
+ 
+ 
+ import * as AuthService from "./services/auth.service";
+@@ -22,19 +19,17 @@
+ import Login from "./login-register/Login";
+ import Register from "./login-register/Register";
+ 
+-//import Home from "./components/Home";
+-//import Profile from "./components/Profile";
+-import BoardUser from "./components/BoardUser";
+-import BoardModerator from "./components/BoardModerator";
+-import BoardAdmin from "./components/BoardAdmin";
+ 
+ import EventBus from "./common/EventBus";
++import {AuthContext} from "./hoc/AuthProvider";
+ 
+ const App: React.FC = () => {
+     const [showHeader, setShowHeader] = useState<boolean>(true);
+     const [showModeratorBoard, setShowModeratorBoard] = useState<boolean>(false);
+     const [showAdminBoard, setShowAdminBoard] = useState<boolean>(false);
+     const [currentUser, setCurrentUser] = useState<IUser | undefined>(undefined);
++    const { isAdmin } = useContext(AuthContext);
++    console.log(isAdmin);
+ 
+     useEffect(() => {
+         const user = AuthService.getCurrentUser();
+@@ -48,8 +43,6 @@
+ 
+         if (user) {
+             setCurrentUser(user);
+-            // setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
+-            // setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
+         }
+ 
+         EventBus.on("logout", logOut);
+@@ -72,13 +65,18 @@
+         <div>
+             <Header />
+             <Routes>
++                {isAdmin ? (
++                    <Route path="/admin" element={<AdminPanel />} />
++                ) : (
++                    // Если не администратор, перенаправляем на страницу профиля
++                    <Route path="/admin" element={<Navigate to="/profile" />} />
++                )}
+                 <Route path="/about" element={<About />} />
+                 <Route path="/publicatedtrips" element={<PublicatedTrips />} />
+-                <Route path="/profile" element={<Profile />} />
++                <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
+                 <Route path="/" element={<Home />} />
+                 <Route path="/contacts" element={<Contacts />} />
+                 <Route path="/map/:tripId" element={<RequireAuth><Map /></RequireAuth>} />
+-
+                 <Route path="/login" element={<Login />} />
+                 <Route path="/registration" element={<Register />} />
+             </Routes>
+@@ -87,89 +85,4 @@
+ }
+ 
+ 
+-//     return (
+-//         <div>
+-//             <nav className="navbar navbar-expand navbar-dark bg-dark">
+-//                 <Link to={"/"} className="navbar-brand">
+-//                     bezKoder
+-//                 </Link>
+-//                 <div className="navbar-nav mr-auto">
+-//                     <li className="nav-item">
+-//                         <Link to={"/home"} className="nav-link">
+-//                             Home
+-//                         </Link>
+-//                     </li>
+-//
+-//                     {showModeratorBoard && (
+-//                         <li className="nav-item">
+-//                             <Link to={"/mod"} className="nav-link">
+-//                                 Moderator Board
+-//                             </Link>
+-//                         </li>
+-//                     )}
+-//
+-//                     {showAdminBoard && (
+-//                         <li className="nav-item">
+-//                             <Link to={"/admin"} className="nav-link">
+-//                                 Admin Board
+-//                             </Link>
+-//                         </li>
+-//                     )}
+-//
+-//                     {currentUser && (
+-//                         <li className="nav-item">
+-//                             <Link to={"/user"} className="nav-link">
+-//                                 User
+-//                             </Link>
+-//                         </li>
+-//                     )}
+-//                 </div>
+-//
+-//                 {currentUser ? (
+-//                     <div className="navbar-nav ml-auto">
+-//                         <li className="nav-item">
+-//                             <Link to={"/profile"} className="nav-link">
+-//                                 {currentUser.username}
+-//                             </Link>
+-//                         </li>
+-//                         <li className="nav-item">
+-//                             <a href="/login" className="nav-link" onClick={logOut}>
+-//                                 LogOut
+-//                             </a>
+-//                         </li>
+-//                     </div>
+-//                 ) : (
+-//                     <div className="navbar-nav ml-auto">
+-//                         <li className="nav-item">
+-//                             <Link to={"/login"} className="nav-link">
+-//                                 Login
+-//                             </Link>
+-//                         </li>
+-//
+-//                         <li className="nav-item">
+-//                             <Link to={"/register"} className="nav-link">
+-//                                 Sign Up
+-//                             </Link>
+-//                         </li>
+-//                     </div>
+-//                 )}
+-//             </nav>
+-//
+-//             <div className="container mt-3">
+-//                 <Routes>
+-//                     <Route path="/" element={<Home />} />
+-//                     <Route path="/home" element={<Home />} />
+-//                     <Route path="/login" element={<Login />} />
+-//                     <Route path="/register" element={<Register />} />
+-//                     <Route path="/profile" element={<Profile />} />
+-//                     <Route path="/user" element={<BoardUser />} />
+-//                     <Route path="/mod" element={<BoardModerator />} />
+-//                     <Route path="/admin" element={<BoardAdmin />} />
+-//                 </Routes>
+-//             </div>
+-//         </div>
+-//     );
+-// };
+-
+-
+ export default App;
+Index: src/login-register/Register.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/login-register/Register.tsx b/src/login-register/Register.tsx
+--- a/src/login-register/Register.tsx	
++++ b/src/login-register/Register.tsx	
+@@ -4,7 +4,7 @@
+ import styles from "./index.module.css";
+ import IUser from "../types/user.type";
+ import { register } from "../services/auth.service";
+-import logo from "../pages/Login/logo.webp";
++import logo from "./logo.webp";
+ import { useNavigate } from "react-router-dom"; // Импорт useNavigate
+ 
+ const Register: React.FC = () => {
+Index: src/services/publicated_trips.service.ts
+===================================================================
+diff --git a/src/services/publicated_trips.service.ts b/src/services/publicated_trips.service.ts
+--- a/src/services/publicated_trips.service.ts	
++++ b/src/services/publicated_trips.service.ts	
+@@ -1,7 +1,8 @@
+ import axios from "axios";
+ 
+ const API_URL_TRIPS = "http://localhost:10000/v1/Trip/publicated";
+-//const API_URL_TRIPS = "https://localhost:7084/v1/Trip/publicated";
++
++
+ 
+ export const getTrips = () => {
+   // Получаем токен доступа из локального хранилища
+Index: src/login-register/Login.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/login-register/Login.tsx b/src/login-register/Login.tsx
+--- a/src/login-register/Login.tsx	
++++ b/src/login-register/Login.tsx	
+@@ -5,7 +5,7 @@
+ 
+ import { login } from "../services/auth.service";
+ import styles from "./index.module.css";
+-import logo from "../pages/Login/logo.webp";
++import logo from "./logo.webp";
+ import {AuthContext} from "../hoc/AuthProvider";
+ 
+ 
+@@ -45,13 +45,10 @@
+   
+         // Проверяем, является ли пользователь администратором
+         if ((response.data && response.data.isAdmin) || response.isAdmin) {
+-          signin({ name, password }, () => {});
+-          localStorage.setItem("email", name);
++          signin({ name, password, isAdmin: response.isAdmin }, () => {});
+           navigate("/admin"); // Перенаправляем администратора на страницу /admin
+         } else {
+-          // Если пользователь не администратор, перенаправляем его на страницу /map
+           signin({ name, password }, () => {});
+-          localStorage.setItem("email", name);
+           navigate("/profile");
+         }
+       },
+Index: src/pages/Map/ExpenseTable.tsx
+===================================================================
+diff --git a/src/pages/Map/ExpenseTable.tsx b/src/pages/Map/ExpenseTable.tsx
+--- a/src/pages/Map/ExpenseTable.tsx	
++++ b/src/pages/Map/ExpenseTable.tsx	
+@@ -158,7 +158,7 @@
+         pricePerOne: parseFloat(expense.pricePerOne),
+         totalPrice: parseFloat(expense.totalPrice),
+         participants: participants.join(',').split(',').map(participant => participant.trim()),
+-        payers: [expense.payers]
++        payers: expense.payers
+       };
+ 
+       // const requestData = {
+@@ -247,7 +247,7 @@
+         <tbody>
+           {expenses && expenses.map((expense, index) => (
+             !deletedRows.includes(expense.id) &&
+-            <tr key={index}>
++            <tr key={expense.id}>
+               <td>
+                 <Input
+                   defaultValue={expense.title}
+Index: src/pages/admin-panel/Card.module.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/pages/admin-panel/Card.module.css b/src/pages/admin-panel/Card.module.css
+new file mode 100644
+--- /dev/null	
++++ b/src/pages/admin-panel/Card.module.css	
+@@ -0,0 +1,50 @@
++/* Card.module.css */
++
++@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap');
++
++.card {
++    width: 50%;
++    height: 350px;
++    margin: 10px;
++    padding: 20px;
++    background-color: #888e97;
++    border-radius: 10px;
++    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
++    text-align: left;
++    font-family: 'Montserrat', sans-serif; /* Применяем шрифт Montserrat */
++}
++
++.deleteButton {
++    cursor: pointer;
++    display: inline-block;
++    background-color: red; /* Зеленый цвет */
++    color: white;
++    font-size: 12px;
++    padding: 4px 8px;
++    border-radius: 16px;
++    margin-top: 10px;
++    z-index: 1;
++}
++.deleteButton:hover {
++    color: #470100;
++}
++
++.card h2 {
++    margin-bottom: 10px;
++    font-weight: 300; /* Тонкий шрифт */
++}
++
++.card p {
++    color: #f8f8f8;
++    font-weight: 300; /* Тонкий шрифт */
++}
++
++.authorChip {
++    display: inline-block;
++    background-color: #4caf50; /* Зеленый цвет */
++    color: white;
++    font-size: 12px;
++    padding: 4px 8px;
++    border-radius: 16px;
++    margin-top: 10px;
++}
+Index: src/pages/admin-panel/TripPopup.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/pages/admin-panel/TripPopup.tsx b/src/pages/admin-panel/TripPopup.tsx
+new file mode 100644
+--- /dev/null	
++++ b/src/pages/admin-panel/TripPopup.tsx	
+@@ -0,0 +1,41 @@
++import React from "react";
++import styles from "./TripPopup.module.css";
++
++interface TripPopupProps {
++  creatorName: string;
++  city: string;
++  days: string[];
++  onClose: () => void;
++  onCreate: () => void; // Добавляем пропс для обработчика создания
++}
++
++
++const TripPopup: React.FC<TripPopupProps> = ({ creatorName, city, days, onClose, onCreate }) => {
++  return (
++    <div className={styles.popup}>
++      <div className={styles.popupContent}>
++        <div className={styles.closeButton} onClick={onClose}>
++          &times;
++        </div>
++        <div className={styles.creatorName}>Создатель: {creatorName}</div>
++        <div className={styles.info}>
++          <div>Город: {city}</div>
++          <div>Количество дней: {days.length}</div>
++        </div>
++        <div className={styles.daysContainer}>
++          <div className={styles.days}>
++            {days.map((day, index) => (
++              <div key={index} className={styles.day}>
++                <h3>День {index + 1}</h3>
++                <p>{day.replace(/^Day \d+ - /, "")}</p>
++              </div>
++            ))}
++          </div>
++        </div>
++        <button className={styles.createButton} onClick={onCreate}>Создать</button> {/* Добавляем кнопку создания */}
++      </div>
++    </div>
++  );
++};
++
++export default TripPopup;
+Index: src/pages/admin-panel/index.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/pages/admin-panel/index.tsx b/src/pages/admin-panel/index.tsx
+new file mode 100644
+--- /dev/null	
++++ b/src/pages/admin-panel/index.tsx	
+@@ -0,0 +1,94 @@
++import React, { useEffect, useRef, useState } from "react";
++import styles from "./index.module.css";
++import Card from "./Card";
++import { getAllTrips, deleteTrip } from "../../services/admin.service";
++import { getCurrentUser } from "../../services/auth.service";
++import TripPopup from "./TripPopup";
++import { useNavigate } from 'react-router-dom';
++
++const AdminPanel: React.FC = () => {
++  const [trips, setTrips] = useState<any[]>([]);
++  const [rows, setRows] = useState(3);
++  const [selectedTrip, setSelectedTrip] = useState<any>(null);
++  const containerRef = useRef<HTMLDivElement>(null);
++  const navigate = useNavigate();
++
++  useEffect(() => {
++    const handleScroll = () => {
++      if (
++          containerRef.current &&
++          window.innerHeight + window.scrollY >=
++          containerRef.current.offsetHeight
++      ) {
++        setRows((prevRows) => Math.min(prevRows + 1, 3));
++      }
++    };
++
++    window.addEventListener("scroll", handleScroll);
++
++    return () => {
++      window.removeEventListener("scroll", handleScroll);
++    };
++  }, []);
++
++  useEffect(() => {
++    getAllTrips()
++        .then((data) => {
++          setTrips(data);
++        })
++        .catch((error) => {
++          console.error("Ошибка при получении списка путешествий:", error);
++        });
++  }, []);
++
++  const handleCardClick = (trip: any) => {
++    setSelectedTrip(trip);
++  };
++
++  const handleClosePopup = () => {
++    setSelectedTrip(null);
++  };
++
++  const isAuthenticated = () => {
++    const userEmail = localStorage.getItem("email");
++    return userEmail !== null; // Возвращает true, если пользователь авторизован, и false в противном случае
++  };
++
++
++  const handleCreate = () => {
++    if (isAuthenticated()) {
++      navigate("/map/000");
++    } else {
++      // Показать попап с надписью "Авторизуйтесь!"
++      alert("Авторизуйтесь!");
++    }
++  };
++
++
++  return (
++      <div className={styles.container} ref={containerRef}>
++        {trips.slice(0, rows * 4).map((trip) => (
++            <div key={trip.id} className={styles.row}>
++              <Card
++                  title={trip.city}
++                  text={`${trip.days.length} дней`}
++                  author={trip.creatorName}
++                  onClick={() => handleCardClick(trip)}
++                  tripId={trip.id} // Передаем уникальный идентификатор tripId
++              />
++            </div>
++        ))}
++        {selectedTrip && (
++            <TripPopup
++                creatorName={selectedTrip.creatorName}
++                city={selectedTrip.city} // Передаем город и дни путешествия
++                days={selectedTrip.days}
++                onClose={handleClosePopup}
++                onCreate={handleCreate}
++            />
++        )}
++      </div>
++  );
++};
++
++export default AdminPanel;
+Index: src/pages/admin-panel/Card.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/pages/admin-panel/Card.tsx b/src/pages/admin-panel/Card.tsx
+new file mode 100644
+--- /dev/null	
++++ b/src/pages/admin-panel/Card.tsx	
+@@ -0,0 +1,76 @@
++import React, { useEffect, useState } from "react";
++import styles from "./Card.module.css";
++import { deleteTrip } from "../../services/admin.service";
++
++interface CardProps {
++    tripId: string; // Добавляем tripId как уникальный идентификатор путешествия
++    title: string;
++    text: string;
++    author: string;
++    onClick: () => void; // Добавляем обработчик события onClick
++}
++
++const Card: React.FC<CardProps> = ({ tripId, title, text, author, onClick }) => {
++    const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null);
++
++    const handleDelete = async () => {
++        try {
++            // Здесь вызываем удаление путешествия с использованием tripId
++            await deleteTrip(tripId);
++            console.log("Путешествие успешно удалено");
++        } catch (error) {
++            console.error("Ошибка при удалении путешествия:", error);
++        }
++    };
++
++    useEffect(() => {
++        const fetchCoordinates = async () => {
++            try {
++                const response = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(title)}&format=json&limit=1`);
++                const data = await response.json();
++                if (data.length > 0) {
++                    setCoordinates({ lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) });
++                }
++            } catch (error) {
++                console.error("Error fetching coordinates:", error);
++            }
++        };
++
++        fetchCoordinates();
++    }, [title]);
++
++    return (
++        <div className={styles.card} onClick={onClick}>
++            {/* Добавляем кнопку удаления */}
++            <h2>{title}</h2>
++            <p>{text}</p>
++            <div style={{ width: "100%", height: "200px", position: "relative" }}>
++                <div style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}>
++                    {coordinates && (
++                        <iframe
++                            title="map"
++                            width="100%"
++                            height="100%"
++                            frameBorder="0"
++                            scrolling="no"
++                            marginHeight={0}
++                            marginWidth={0}
++                            src={`https://yandex.ru/map-widget/v1/-/CKVwjCRX?ll=${coordinates.lon},${coordinates.lat}&z=10&l=map`}
++                            style={{ border: 0 }}
++                            allowFullScreen={true}
++                        />
++                    )}
++                </div>
++            </div>
++            <div className={styles.authorChip}>{author}</div>
++            <div className={styles.deleteButtonContainer} onClick={(e) => {
++                e.stopPropagation();
++                handleDelete();
++            }}>
++                <div className={styles.deleteButton}>Удалить</div>
++            </div>
++        </div>
++    );
++};
++
++export default Card;
+Index: src/services/admin.service.ts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/services/admin.service.ts b/src/services/admin.service.ts
+new file mode 100644
+--- /dev/null	
++++ b/src/services/admin.service.ts	
+@@ -0,0 +1,48 @@
++import axios from "axios";
++
++const API_URL_ALL_TRIPS = "http://localhost:10000/v1/Trip";
++const API_URL_DELETETRIP = "http://localhost:10000/v1/Trip";
++
++//const API_URL_TRIPS = "https://localhost:7084/v1/Trip/publicated";
++
++export const getAllTrips = () => {
++    // Получаем токен доступа из локального хранилища
++    const user = localStorage.getItem("user");
++    const accessToken = user ? JSON.parse(user).accessToken : null;
++
++    // Если токен доступа есть, добавляем его в заголовок Authorization
++    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
++
++    // Отправляем GET-запрос для получения списка всех путешествий
++    return axios.get(API_URL_ALL_TRIPS, { headers })
++        .then((response) => {
++            return response.data;
++        })
++        .catch((error) => {
++            console.error("Ошибка при получении списка всех путешествий:", error);
++            throw error;
++        });
++};
++
++
++export const deleteTrip = (id: any) => {
++    // Получаем токен доступа из локального хранилища
++    const user = localStorage.getItem("user");
++    const accessToken = user ? JSON.parse(user).accessToken : null;
++
++    // Если токен доступа есть, добавляем его в заголовок Authorization
++    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
++
++    // Формируем URL для удаления путешествия с заданным id
++    const deleteUrl = `${API_URL_DELETETRIP}/${id}`;
++
++    // Отправляем DELETE-запрос для удаления путешествия
++    return axios.delete(deleteUrl, { headers })
++        .then((response) => {
++            return response.data;
++        })
++        .catch((error) => {
++            console.error("Ошибка при удалении путешествия:", error);
++            throw error;
++        });
++};
+\ No newline at end of file
+Index: src/pages/admin-panel/TripPopup.module.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/pages/admin-panel/TripPopup.module.css b/src/pages/admin-panel/TripPopup.module.css
+new file mode 100644
+--- /dev/null	
++++ b/src/pages/admin-panel/TripPopup.module.css	
+@@ -0,0 +1,68 @@
++.popup {
++    position: fixed;
++    top: 50%;
++    left: 50%;
++    transform: translate(-50%, -50%);
++    background-color: rgba(0, 0, 0, 0.92);
++    color: white;
++    padding: 20px;
++    border-radius: 10px;
++    font-family: 'Montserrat', sans-serif;
++    font-weight: 300;
++    max-height: 80vh; /* Ограничиваем максимальную высоту попапа */
++    overflow-y: auto; /* Добавляем скроллинг при необходимости */
++  }
++  .createButton {
++    margin-top: 20px;
++    padding: 10px 20px;
++    background-color: #4CAF50;
++    color: white;
++    border: none;
++    border-radius: 5px;
++    cursor: pointer;
++  }
++  
++  .createButton:hover {
++    background-color: #45a049;
++  }
++  
++  .popupContent {
++    display: flex;
++    flex-direction: column;
++    align-items: center;
++  }
++  
++  .closeButton {
++    position: absolute;
++    top: 10px;
++    right: 10px;
++    cursor: pointer;
++  }
++  
++  .creatorName {
++    margin-top: 20px;
++    font-size: 18px;
++  }
++  
++  .daysContainer {
++    margin-top: 20px;
++    max-height: calc(80vh - 100px); /* Высота контейнера с днями, вычитаем высоту остальных элементов */
++    overflow-y: auto; /* Добавляем скроллинг при необходимости */
++  }
++  
++  .days {
++    margin-top: 10px;
++  }
++  
++  .day {
++    margin-bottom: 20px;
++  }
++  
++  .day h3 {
++    font-weight: 300;
++  }
++  
++  .day p {
++    font-weight: 300;
++  }
++  
+\ No newline at end of file
+Index: src/pages/admin-panel/index.module.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/pages/admin-panel/index.module.css b/src/pages/admin-panel/index.module.css
+new file mode 100644
+--- /dev/null	
++++ b/src/pages/admin-panel/index.module.css	
+@@ -0,0 +1,27 @@
++.container {
++    display: flex;
++    flex-direction: column;
++    justify-content: center;
++    align-items: center;
++    width: 100%;
++}
++
++.row {
++    display: flex;
++    width: 100%;
++    justify-content: center; /* Центрирование карточек внутри ряда */
++}
++
++
++.card {
++    width: 30%;
++    height: 300px;
++    margin: 10px;
++    background-color: #696D74; /* Светло-бежевый цвет */
++}
++.container {
++    display: grid;
++    grid-template-columns: repeat(3, 1fr);
++    gap: 20px;
++  }
++  
+\ No newline at end of file
+Index: src/hoc/AuthProvider.tsx
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/hoc/AuthProvider.tsx b/src/hoc/AuthProvider.tsx
+--- a/src/hoc/AuthProvider.tsx	
++++ b/src/hoc/AuthProvider.tsx	
+@@ -2,12 +2,14 @@
+ 
+ interface AuthContextType {
+     user: any;  // Укажите более конкретный тип в зависимости от структуры вашего пользователя
++    isAdmin: boolean;
+     signin: (newUser: any, callback: () => void) => void;
+     signout: (callback: () => void) => void;
+ }
+ 
+ export const AuthContext = createContext<AuthContextType>({
+     user: undefined,
++    isAdmin: false,
+     signin: () => {},
+     signout: () => {}
+ });
+@@ -17,21 +19,32 @@
+ }
+ 
+ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+-    const [user, setUser] = useState<any>(null);
++    const localStorageUser =
++    {
++        name: localStorage.getItem("name")
++    }
++    const [user, setUser] = useState<any>(localStorageUser);
++    const [isAdmin, setIsAdmin] = useState<boolean>(Boolean(localStorage.getItem("isAdmin")));
+ 
+     const signin = (newUser: any, callback: () => void) => {
+         console.log("Signing in:", newUser);
+         setUser(newUser);
++        setIsAdmin(newUser.isAdmin); // Устанавливаем статус администратора при входе
++        localStorage.setItem("email", newUser.name);
++        localStorage.setItem("isAdmin", newUser.isAdmin);
+         if (callback) callback();
+     }
+ 
+     const signout = (callback: () => void) => {
+         console.log("Signing out");
+         setUser(null);
++        setIsAdmin(false); // Сбрасываем статус администратора при выходе
++        localStorage.removeItem("email");
++        localStorage.removeItem("isAdmin");
+         if (callback) callback();
+     }
+ 
+-    const value = { user, signin, signout };
++    const value = { user, isAdmin, signin, signout };
+ 
+     return (
+         <AuthContext.Provider value={value}>
+Index: src/index.tsx
+===================================================================
+diff --git a/src/index.tsx b/src/index.tsx
+--- a/src/index.tsx	
++++ b/src/index.tsx	
+@@ -24,7 +24,7 @@
+   <React.StrictMode>
+       <AuthProvider>
+       <BrowserRouter>
+-    <App />
++            <App />
+       </BrowserRouter>
+     </AuthProvider>
+   </React.StrictMode>
+diff --git a/src/pages/Login/logo.webp b/src/login-register/logo.webp
+new file mode 100644
+index 0000000000000000000000000000000000000000..65b2b054378b08a97904b03ad56fe744b3baf8eb
+GIT binary patch
+literal 11512
+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
+ItrFh<19*Hl`2YX_
+
