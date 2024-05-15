@@ -5,7 +5,7 @@ import * as Yup from "yup";
 
 import { login } from "../services/auth.service";
 import styles from "./index.module.css";
-import logo from "../pages/Login/logo.webp";
+import logo from "./logo.webp";
 import {AuthContext} from "../hoc/AuthProvider";
 
 
@@ -45,13 +45,10 @@ const Login: React.FC<Props> = () => {
   
         // Проверяем, является ли пользователь администратором
         if ((response.data && response.data.isAdmin) || response.isAdmin) {
-          signin({ name, password }, () => {});
-          localStorage.setItem("email", name);
+          signin({ name, password, isAdmin: response.isAdmin }, () => {});
           navigate("/admin"); // Перенаправляем администратора на страницу /admin
         } else {
-          // Если пользователь не администратор, перенаправляем его на страницу /map
           signin({ name, password }, () => {});
-          localStorage.setItem("email", name);
           navigate("/profile");
         }
       },

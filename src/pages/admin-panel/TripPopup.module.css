@@ -1,0 +1,68 @@
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.92);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    max-height: 80vh; /* Ограничиваем максимальную высоту попапа */
+    overflow-y: auto; /* Добавляем скроллинг при необходимости */
+  }
+  .createButton {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .createButton:hover {
+    background-color: #45a049;
+  }
+  
+  .popupContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
+  
+  .creatorName {
+    margin-top: 20px;
+    font-size: 18px;
+  }
+  
+  .daysContainer {
+    margin-top: 20px;
+    max-height: calc(80vh - 100px); /* Высота контейнера с днями, вычитаем высоту остальных элементов */
+    overflow-y: auto; /* Добавляем скроллинг при необходимости */
+  }
+  
+  .days {
+    margin-top: 10px;
+  }
+  
+  .day {
+    margin-bottom: 20px;
+  }
+  
+  .day h3 {
+    font-weight: 300;
+  }
+  
+  .day p {
+    font-weight: 300;
+  }
+  

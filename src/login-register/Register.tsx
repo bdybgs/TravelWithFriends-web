@@ -4,7 +4,7 @@ import * as Yup from "yup";
 import styles from "./index.module.css";
 import IUser from "../types/user.type";
 import { register } from "../services/auth.service";
-import logo from "../pages/Login/logo.webp";
+import logo from "./logo.webp";
 import { useNavigate } from "react-router-dom"; // Импорт useNavigate
 
 const Register: React.FC = () => {

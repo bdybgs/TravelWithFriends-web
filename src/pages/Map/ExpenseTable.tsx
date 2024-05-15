@@ -158,7 +158,7 @@ const ExpenseTable: React.FC<Props> = ({
         pricePerOne: parseFloat(expense.pricePerOne),
         totalPrice: parseFloat(expense.totalPrice),
         participants: participants.join(',').split(',').map(participant => participant.trim()),
-        payers: [expense.payers]
+        payers: expense.payers
       };
 
       // const requestData = {
@@ -247,7 +247,7 @@ const ExpenseTable: React.FC<Props> = ({
         <tbody>
           {expenses && expenses.map((expense, index) => (
             !deletedRows.includes(expense.id) &&
-            <tr key={index}>
+            <tr key={expense.id}>
               <td>
                 <Input
                   defaultValue={expense.title}
