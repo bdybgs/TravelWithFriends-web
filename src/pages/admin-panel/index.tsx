@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
 import Card from "./Card";
 import { getAllTrips, deleteTrip } from "../../services/admin.service";
-import { getCurrentUser } from "../../services/auth.service";
 import TripPopup from "./TripPopup";
 import { useNavigate } from 'react-router-dom';
 
