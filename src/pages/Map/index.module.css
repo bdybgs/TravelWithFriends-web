@@ -1,10 +1,19 @@
 .container {
-    display: flex;
-    justify-content: center; /* Выравнивание по центру */
-    align-items: center; /* Выравнивание по центру */
-    height: 100vh; /* Высота контейнера на всю высоту видимой области */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 33vh 1fr auto;
+    height: 100vh;
     font-family: Inter, sans-serif;
 }
+
+.mapContainer {
+    grid-column: 1 / 3;
+    height: 100%; /* Максимизируем высоту карты внутри контейнера */
+    max-height: calc(33vh - 20px); /* Ограничиваем высоту карты на треть высоты экрана с учетом отступов */
+    margin-bottom: 10px; /* Добавляем отступ снизу */
+    overflow: hidden; /* Обрезаем контент, если он выходит за пределы контейнера */
+}
+
 .statContainer {
     width: 100%;
 }
@@ -23,15 +32,14 @@
     margin-left: 10px;
 }
 .block {
-    position: relative; /* Добавляем позиционирование */
-    display: grid;
-    grid-template-rows: max-content auto max-content;
-    gap: 8px;               
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    padding: 10px;
     border-radius: 10px;
     background-color: #222831;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: calc(100vh - 104px);
-    width: 50%; /* Установка максимальной ширины */
     font-family: Inter, sans-serif;
     color: white;
 }
@@ -49,29 +57,22 @@
     padding-left: 10px;
 }
 
-.mapContainer {
-    flex: 1; /* Растягиваем контейнер с картой на всю доступную ширину */
-    margin-left: 30px;
-}
-
 .tableContainer {
     overflow-y: auto;
     height: 100%;
     margin-left: 10%;
+    width: 100%;
 }
 
 .table {
     width: 90%; /* Ширина таблицы на всю доступную ширину */
     z-index: 1;
 }
-
 .buttonsContainer {
-    margin-left: 30%;
-    position: relative;
-    padding-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    margin-top: auto;
 }
-
-
 
 .tablebutton {
     margin-left: 30%;
@@ -96,8 +97,6 @@
 body.scroll-bottom .fullWidthContainer {
     bottom: 0;
 }
-
-
 
 .fullWidthContent {
     display: flex; /* Используем flex-контейнер */

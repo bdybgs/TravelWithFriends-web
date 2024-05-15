@@ -3,7 +3,7 @@ import './App.css';
 import { useState, useEffect } from "react";
 import Map from "./pages/Map";
 import Home from "./pages/Home"
-import Contacts from "./pages/Contacts"
+//import Contacts from "./pages/Contacts"
 import Header from "./components/Header";
 import About from "./pages/About";
 import PublicatedTrips from "./pages/PublicatedTrips";
@@ -75,7 +75,7 @@ const App: React.FC = () => {
                 <Route path="/publicatedtrips" element={<PublicatedTrips />} />
                 <Route path="/profile" element={<RequireAuth><Profile /></RequireAuth>} />
                 <Route path="/" element={<Home />} />
-                <Route path="/contacts" element={<Contacts />} />
+                
                 <Route path="/map/:tripId" element={<RequireAuth><Map /></RequireAuth>} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/registration" element={<Register />} />
