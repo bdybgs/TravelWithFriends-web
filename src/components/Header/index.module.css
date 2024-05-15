@@ -45,6 +45,7 @@
     padding: 10px 20px; /* Внутренние отступы ссылок */
     margin-right: 50px; /* Внешние отступы между ссылками */
     border-radius: 5px; /* Закругляем углы */
+    color: white;
     font-size: 20px;
 
 }

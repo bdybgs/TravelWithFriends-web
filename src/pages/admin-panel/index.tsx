@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./index.module.css";
 import Card from "./Card";
-import { getAllTrips, deleteTrip } from "../../services/admin.service";
+import { getAllTrips, getUserIdByEmail, updateStatus } from "../../services/admin.service";
 import TripPopup from "./TripPopup";
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,8 @@ const AdminPanel: React.FC = () => {
   const [trips, setTrips] = useState<any[]>([]);
   const [rows, setRows] = useState(3);
   const [selectedTrip, setSelectedTrip] = useState<any>(null);
+  const [email, setEmail] = useState('');
+  const [userId, setUserId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
@@ -40,6 +42,28 @@ const AdminPanel: React.FC = () => {
         });
   }, []);
 
+  const handleSetStatus = async (status: number) => {
+    try {
+      if (!userId) {
+        const id = await getUserIdByEmail(email);
+        console.log("Fetched user ID:", id); // Log the fetched user ID
+        setUserId(id);
+        await updateStatus(id, { newStatus: status });
+      } else {
+        await updateStatus(userId, { newStatus: status });
+      }
+      alert(`Status updated to ${status === 2 ? 'Pro' : 'Regular'}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Ошибка при обновлении статуса:", error);
+        alert("Ошибка при обновлении статуса: " + error.message);
+      } else {
+        console.error("Unexpected error:", error);
+        alert("Unexpected error occurred");
+      }
+    }
+  };
+
   const handleCardClick = (trip: any) => {
     setSelectedTrip(trip);
   };
@@ -50,22 +74,33 @@ const AdminPanel: React.FC = () => {
 
   const isAuthenticated = () => {
     const userEmail = localStorage.getItem("email");
-    return userEmail !== null; // Возвращает true, если пользователь авторизован, и false в противном случае
+    return userEmail !== null;
   };
-
 
   const handleCreate = () => {
     if (isAuthenticated()) {
       navigate("/map/000");
     } else {
-      // Показать попап с надписью "Авторизуйтесь!"
       alert("Авторизуйтесь!");
     }
   };
 
-
   return (
       <div className={styles.container} ref={containerRef}>
+        <div className={styles.inputContainer}>
+          <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter user email"
+              className={styles.input}
+          />
+          <div className={styles.buttonContainer}>
+            <button className={styles.button} onClick={() => handleSetStatus(2)}>Set Pro</button>
+            <button className={styles.button} onClick={() => handleSetStatus(0)}>Set Regular</button>
+          </div>
+        </div>
+
         {trips.slice(0, rows * 4).map((trip) => (
             <div key={trip.id} className={styles.row}>
               <Card
@@ -73,14 +108,14 @@ const AdminPanel: React.FC = () => {
                   text={`${trip.days.length} дней`}
                   author={trip.creatorName}
                   onClick={() => handleCardClick(trip)}
-                  tripId={trip.id} // Передаем уникальный идентификатор tripId
+                  tripId={trip.id}
               />
             </div>
         ))}
         {selectedTrip && (
             <TripPopup
                 creatorName={selectedTrip.creatorName}
-                city={selectedTrip.city} // Передаем город и дни путешествия
+                city={selectedTrip.city}
                 days={selectedTrip.days}
                 onClose={handleClosePopup}
                 onCreate={handleCreate}
