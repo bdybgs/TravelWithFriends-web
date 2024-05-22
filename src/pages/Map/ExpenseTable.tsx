@@ -229,97 +229,99 @@ const ExpenseTable: React.FC<Props> = ({
     
   return (
     <div className={styles.tableContainer}>
-      <table className={styles.table} id="table">
-      <div>День {currentDay + 1}</div>
-
-        {/* <Input placeholder="Basic usage" />
-        <Input defaultValue={expense.dayGuid} /> */}
-        <thead>
-          <tr>
-            <th>Название</th>
-            <th>Категория</th>
-            <th>Участники</th>
-            <th>Оплачивал</th>
-            <th>За одного</th>
-            <th>Итог</th>
-          </tr>
-        </thead>
-        <tbody>
-          {expenses && expenses.map((expense, index) => (
-            !deletedRows.includes(expense.id) &&
-            <tr key={expense.id}>
-              <td>
-                <Input
-                  defaultValue={expense.title}
-                  onChange={(e) => handleTitleChange(index, e.target.value)}
-                />
-              </td>
-              <td>
-                  <Select
-                    defaultValue={expense.categoryTitle}
-                    onChange={(value) => handleCategoryChange(index, value)}
-                  >
-                  {categories.map((category, catIndex) => (
-                    <Select.Option key={catIndex} value={category.title}>
-                      {category.title}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </td>
-              <td>
-                  <Select
-                    mode="multiple"
-                    defaultValue={expense.participants}
-                    onChange={(value) => handleParticipantsChange(index, value)}
-                  >
-                  {totalparticipants && totalparticipants.map((participant, participantIndex) => (
-                    <Select.Option key={participantIndex} value={participant}>
-                      {participant}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </td>
-              <td>
-                <Select
-                    defaultValue={expense.payers}
-                    onChange={(value) => handlePayersChange(index, value)}
-                  >
-                  {totalparticipants.map((participant, participantIndex) => (
-                    <Select.Option key={participantIndex} value={participant}>
-                      {participant}
-                    </Select.Option>
-                  ))}
-                </Select>
-              </td>
-              <td>
-                <Input
-                  type="number"
-                  defaultValue={expense.pricePerOne}
-                  onChange={(e) => handlePricePerOneChange(index, e.target.value)}
-                />
-              </td>
-              <td>
-                <Input
-                  type="number"
-                  defaultValue={expense.totalPrice}
-                  onChange={(e) => handleTotalPriceChange(index, e.target.value)}
-                />
-              </td>
-              <td>
-                <Button onClick={() => handleSave(index)} icon={<SaveOutlined />} />
-              </td>
-              <td>
-                <Button onClick={() => handleDelete(expense)} icon={<DeleteOutlined />} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      <Button onClick={addExpense} className={styles.tablebutton}>
-        Добавить трату
-      </Button>
+        <div className={styles.tableWrapper}>
+            <div>День {currentDay + 1}</div>
+            <table className={styles.table} id="table">
+                <thead>
+                    <tr>
+                        <th>Название</th>
+                        <th>Категория</th>
+                        <th>Участники</th>
+                        <th>Оплачивал</th>
+                        <th>За одного</th>
+                        <th>Итог</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {expenses && expenses.map((expense, index) => (
+                        !deletedRows.includes(expense.id) &&
+                        <tr key={expense.id}>
+                            <td>
+                                <Input
+                                    defaultValue={expense.title}
+                                    onChange={(e) => handleTitleChange(index, e.target.value)}
+                                />
+                            </td>
+                            <td>
+                                <Select
+                                    defaultValue={expense.categoryTitle}
+                                    onChange={(value) => handleCategoryChange(index, value)}
+                                >
+                                    {categories.map((category, catIndex) => (
+                                        <Select.Option key={catIndex} value={category.title}>
+                                            {category.title}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </td>
+                            <td>
+                                <Select
+                                    mode="multiple"
+                                    defaultValue={expense.participants}
+                                    onChange={(value) => handleParticipantsChange(index, value)}
+                                >
+                                    {totalparticipants && totalparticipants.map((participant, participantIndex) => (
+                                        <Select.Option key={participantIndex} value={participant}>
+                                            {participant}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </td>
+                            <td>
+                                <Select
+                                    defaultValue={expense.payers}
+                                    onChange={(value) => handlePayersChange(index, value)}
+                                >
+                                    {totalparticipants.map((participant, participantIndex) => (
+                                        <Select.Option key={participantIndex} value={participant}>
+                                            {participant}
+                                        </Select.Option>
+                                    ))}
+                                </Select>
+                            </td>
+                            <td>
+                                <Input
+                                    type="number"
+                                    defaultValue={expense.pricePerOne}
+                                    onChange={(e) => handlePricePerOneChange(index, e.target.value)}
+                                />
+                            </td>
+                            <td>
+                                <Input
+                                    type="number"
+                                    defaultValue={expense.totalPrice}
+                                    onChange={(e) => handleTotalPriceChange(index, e.target.value)}
+                                />
+                            </td>
+                            <td>
+                                <Button onClick={() => handleSave(index)} icon={<SaveOutlined />} />
+                            </td>
+                            <td>
+                                <Button onClick={() => handleDelete(expense)} icon={<DeleteOutlined />} />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+        <Button onClick={addExpense} className={styles.tablebutton}>
+            Добавить трату
+        </Button>
     </div>
-  );
+);
+
 };
 
 export default ExpenseTable;

@@ -92,7 +92,10 @@ const Profile: React.FC = () => {
                     <TripCard
                         key={trip.id}
                         title={trip.title}
-                        text={`City: ${trip.city}`} // Используем city в качестве текста
+                        text={`Город: ${trip.city}`}
+                        dateStart={trip.dateStart}
+                        dateEnd={trip.dateEnd}
+                        participants={trip.participants}
                         author={trip.creatorName} // Используем creatorName в качестве автора
                         onClick={() => {
                             handleMapClick(trip.id);

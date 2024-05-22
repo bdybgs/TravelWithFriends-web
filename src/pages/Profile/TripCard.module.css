@@ -4,7 +4,7 @@
 
 .card {
     width: 50%;
-    height: 150px;
+    height: 40%;
     margin: 10px;
     padding: 20px;
     background-color: #888e97;
@@ -12,6 +12,8 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;
     font-family: 'Montserrat', sans-serif; /* Применяем шрифт Montserrat */
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
 }
 
 .card h2 {
@@ -33,3 +35,26 @@
     border-radius: 16px;
     margin-top: 10px;
 }
+.card:hover {
+    border-color: violet; /* Задаем цвет фиолетовой рамки при наведении */
+  }
+
+  .participantsChips {
+    display: flex; /* Располагаем чипсы в строку */
+    flex-wrap: wrap; /* Разрешаем перенос строк, если чипсы не помещаются */
+    margin-top: 10px; /* Отступ сверху */
+  }
+
+  .participantChip {
+    background-color: #4caf50; /* Цвет чипса */
+    color: white; /* Цвет текста */
+    font-size: 12px; /* Размер шрифта */
+    padding: 4px 8px; /* Внутренние отступы */
+    border-radius: 16px; /* Скругленные углы */
+    margin-right: 5px; /* Отступ между чипсами */
+    margin-bottom: 5px; /* Отступ снизу */
+  }
+
+  .showMoreButton {
+    background-color: transparent; /* Прозрачный фон */
+  }
