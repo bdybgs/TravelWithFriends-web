@@ -234,10 +234,6 @@ const Map = () => {
         }
     };
     
-    
-
-
-    
     const handleAddParticipant = () => {
         if (!tripId) {
             alert('Невозможно добавить участника: tripId не определен.');
@@ -245,8 +241,6 @@ const Map = () => {
         }
     
         if (!participantEmail.trim()) {
-            // Если email пустой, показываем сообщение об ошибке
-            // Можно использовать уведомление или другой способ оповещения пользователя
             alert('Пожалуйста, введите email участника.');
             return;
         }
@@ -266,63 +260,69 @@ const Map = () => {
     };
     
     return (
-
-        <div className={styles.container}>            
+        <div className={styles.container}>
             <div className={styles.mapContainer}>
-                <YandexMap points={points} />
-            </div>
-            <div className={styles.block}>
-                
-                <div>
-                    <div className={styles.textdata}>Название: {tripData.title}</div>
-                    <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
-                    <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
-                    <div className={styles.textdata}>Город: {tripData.city}</div>
-                    <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
-                    
-                    <div className={styles.addParticipantContainer}>
-                        <Input 
-                            className={styles.inputField} 
-                            placeholder="Введите email участника" 
-                            value={participantEmail} 
-                            onChange={(e) => setParticipantEmail(e.target.value)} // Добавляем обработчик изменения значения email участника
-                        />
-                        <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
+                <div className={styles.map}>
+                    <YandexMap points={points} />
+                </div>
+                <div className={styles.infoBlock}>
+                    <div>
+                        <div className={styles.textdata}>Название: {tripData.title}</div>
+                        <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
+                        <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
+                        <div className={styles.textdata}>Город: {tripData.city}</div>
+                        <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
+    
+                        <div className={styles.addParticipantContainer}>
+                            <Input
+                                className={styles.inputField}
+                                placeholder="Введите email участника"
+                                value={participantEmail}
+                                onChange={(e) => setParticipantEmail(e.target.value)}
+                            />
+                            <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
+                        </div>
+    
+                        <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
                     </div>
-
-                    <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
-                </div>
-                <div >
-                    <ExpenseTable
-                        expenses={expensesByDay[dayGuids[currentDay]]} 
-                        currentDay={currentDay}
-                        addExpense={addExpense}
-                        removeExpense={removeExpense}
-                        handleExpenseChange={handleExpenseChange}
-                        totalparticipants={totalparticipants}
-                        dayGuid={dayGuids[currentDay]}
-                    />
-
-                    <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
-                        <FaChevronLeft style={{ color: 'black' }} />
-                    </Button>
-                    <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
-                        <FaChevronRight style={{ color: 'black' }} />
-                    </Button>
-                </div>
-
-                <div className={styles.buttonsContainer}>
-                    <Button type="primary" style={{ backgroundColor: '#00B58A' }}>Сохранить</Button>
-                    <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickStatistic}>Статистика</Button>
                 </div>
             </div>
-
+            <div className={styles.tableContainer}>
+                <div className={styles.block}>
+                    <div className={styles.tableWrapper}>
+                        <ExpenseTable
+                            expenses={expensesByDay[dayGuids[currentDay]]}
+                            currentDay={currentDay}
+                            addExpense={addExpense}
+                            removeExpense={removeExpense}
+                            handleExpenseChange={handleExpenseChange}
+                            totalparticipants={totalparticipants}
+                            dayGuid={dayGuids[currentDay]}
+                        />
+                    </div>
+                    <div className={styles.buttonsContainer}>
+                    <div className={styles.navigationButtons}>
+                        <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
+                            <FaChevronLeft style={{ color: 'black' }} />
+                        </Button>
+                        <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
+                            <FaChevronRight style={{ color: 'black' }} />
+                        </Button>
+                    </div>
+                        
+                        <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickStatistic}>Статистика</Button>
+                    </div>
+                </div>
+            </div>
+    
             <Statistics
                 teamExpensesData={teamExpensesData}
                 categoryExpensesData={categoryExpensesData}
             />
         </div>
     );
+    
+    
 };
 
 export default Map;
