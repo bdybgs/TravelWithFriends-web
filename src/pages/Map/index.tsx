@@ -184,6 +184,7 @@ const Map = () => {
         const newExpense = { 
             id: Date.now(), 
             title: searchLoc, 
+            fromSearch: true,
             categoryTitle: '', 
             participants: '', 
             payers: '', 
@@ -214,6 +215,7 @@ const Map = () => {
         const newExpense = { 
             id: Date.now(), 
             title: '', 
+            fromSearch: false,
             categoryTitle: '', 
             participants: '', 
             payers: '', 
@@ -304,6 +306,10 @@ const Map = () => {
                 alert('Произошла ошибка при добавлении участника. Пожалуйста, попробуйте еще раз.');
             });
     };
+
+    const handleClickShowRoute = () => {
+        
+    }
     
     return (
         <div className={styles.container}>
@@ -355,7 +361,7 @@ const Map = () => {
                             <FaChevronRight style={{ color: 'black' }} />
                         </Button>
                     </div>
-                        
+                        <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickShowRoute}>На карте</Button>
                         <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickStatistic}>Статистика</Button>
                     </div>
                 </div>

@@ -1,4 +1,6 @@
 import axios from "axios";
+import { useLocation, Navigate } from "react-router-dom";
+import React from 'react';
 
 interface TripData {
     creatorId: string;
@@ -118,9 +120,16 @@ export const getTrip = async (tripId: string) => {
     console.log(response.data);
 
     return response.data;
-  } catch (error) {
+  } catch (error : any) {
     console.error('There has been a problem with your fetch operation:', error);
-    return null;
+    // Проверяем, является ли ошибка ошибкой 401
+    if (error.response && error.response.status === 401) {
+      // Возвращаем компонент перенаправления на страницу авторизации
+      return React.createElement(Navigate, { to: "/login" });
+    } else {
+      // Продолжаем обработку других ошибок
+      return null;
+    }
   }
 };
 

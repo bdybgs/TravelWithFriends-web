@@ -8,6 +8,7 @@ import { addActiviesByDay, ActivityData, deleteActivity, updateActivity, getStat
 interface Expense {
   id: number;
   title: string;
+  fromSearch: boolean,
   categoryTitle: string;
   participants: string[];
   payers: string[];
@@ -179,6 +180,7 @@ const ExpenseTable: React.FC<Props> = ({
     const data: ActivityData = {
       dayId: dayGuid,
       title: expense.title,
+      fromSearch: expense.fromSearch,
       categoryId: categories.find(category => category.title === expense.categoryTitle)?.id,
       pricePerOne: parseFloat(expense.pricePerOne),
       totalPrice: parseFloat(expense.totalPrice),
