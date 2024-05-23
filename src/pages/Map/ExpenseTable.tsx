@@ -269,13 +269,13 @@ const ExpenseTable: React.FC<Props> = ({
                             <td>
                                 <Select
                                     mode="multiple"
-                                    defaultValue={expense.participants}
+                                    defaultValue={expense.participants.length > 0 ? expense.participants : null}
                                     onChange={(value) => handleParticipantsChange(index, value)}
                                 >
                                     {totalparticipants && totalparticipants.map((participant, participantIndex) => (
                                         <Select.Option key={participantIndex} value={participant}>
                                             {participant}
-                                        </Select.Option>
+                                        </Select.Option> 
                                     ))}
                                 </Select>
                             </td>
