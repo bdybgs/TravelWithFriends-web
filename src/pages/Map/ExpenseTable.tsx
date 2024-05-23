@@ -10,7 +10,7 @@ interface Expense {
   title: string;
   categoryTitle: string;
   participants: string[];
-  payers: string;
+  payers: string[];
   pricePerOne: string;
   totalPrice: string;
 }
@@ -77,8 +77,8 @@ const ExpenseTable: React.FC<Props> = ({
     console.log(`Model for expense ${index + 1} updated: Title - ${expenseModels[index].title}, Participants - ${value.join(',')}`);
   };
   
-  const handlePayersChange = (index: number, value: string) => {
-    handleExpenseChange(index, 'payers', value);
+  const handlePayersChange = (index: number, value: string[]) => {
+    handleExpenseChange(index, 'payers', value.join(','));
     updateExpenseModel(index, { payers: value });
     console.log(`Model for expense ${index + 1} updated: Payers - ${value}`);
   };
@@ -143,6 +143,7 @@ const ExpenseTable: React.FC<Props> = ({
 
     // Проверяем, что expense.participants является строкой, а не массивом строк
     const participants = Array.isArray(expense.participants) ? expense.participants : [expense.participants];
+    const payers = Array.isArray(expense.payers) ? expense.payers : [expense.payers];
 
 
     const idPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -151,6 +152,7 @@ const ExpenseTable: React.FC<Props> = ({
       const activityId = expense.id;
 
       console.log("participants: "+expense.participants);
+      console.log("payers: "+expense.payers);
 //при изменении траты, которая уже в бд, изменения не сохраняются из-за participants и payers
       const requestData = {
         title: expense.title,
@@ -158,19 +160,8 @@ const ExpenseTable: React.FC<Props> = ({
         pricePerOne: parseFloat(expense.pricePerOne),
         totalPrice: parseFloat(expense.totalPrice),
         participants: participants.join(',').split(',').map(participant => participant.trim()),
-        payers: expense.payers
+        payers: payers.join(',').split(',').map(payer => payer.trim())
       };
-
-      // const requestData = {
-      //   title: expense.title,
-      //   categoryId: categories.find(category => category.title === expense.categoryTitle)?.id,
-      //   pricePerOne: parseFloat(expense.pricePerOne),
-      //   totalPrice: parseFloat(expense.totalPrice),
-      //   participants: [
-      //     'maria@twf.com'
-      //   ],
-      //   payers: [expense.payers]
-      // };
 
       console.log("ID: "+expense.id);
       console.log('Activity Data to update:', requestData);
@@ -192,7 +183,7 @@ const ExpenseTable: React.FC<Props> = ({
       pricePerOne: parseFloat(expense.pricePerOne),
       totalPrice: parseFloat(expense.totalPrice),
       participants: participants.join(',').split(',').map(participant => participant.trim()),
-      payers: [expense.payers],
+      payers: payers.join(',').split(',').map(payer => payer.trim()),
     };
 
     console.log('Activity Data:', data);
@@ -280,16 +271,17 @@ const ExpenseTable: React.FC<Props> = ({
                                 </Select>
                             </td>
                             <td>
-                                <Select
-                                    defaultValue={expense.payers}
-                                    onChange={(value) => handlePayersChange(index, value)}
-                                >
-                                    {totalparticipants.map((participant, participantIndex) => (
-                                        <Select.Option key={participantIndex} value={participant}>
-                                            {participant}
-                                        </Select.Option>
-                                    ))}
-                                </Select>
+                            <Select
+                                defaultValue={expense.payers.length < 2 ? expense.payers : ["на всех"]}
+                                onChange={(value: string | string[]) => handlePayersChange(index, Array.isArray(value) ? value : [value])}
+                            >
+                                {totalparticipants.map((participant, participantIndex) => (
+                                    <Select.Option key={participantIndex} value={participant}>
+                                        {participant}
+                                    </Select.Option>
+                                ))}
+                            </Select>
+
                             </td>
                             <td>
                                 <Input

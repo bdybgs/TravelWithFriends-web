@@ -41,12 +41,29 @@ const Map = () => {
     const [expensesByDay, setExpensesByDay] = useState<{ [key: string]: any[] }>({});
 
     const [totalparticipants, setTotalParticipants] = useState<string[]>([]);
+
+    const [searchRequestString, setSearchRequestString] = useState<string>("");
+
     
     useEffect(() => {
         setTimeout(() => {
             setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
         }, 2000);
     }, []);
+
+    // Добавляем useEffect для вывода в консоль при получении значения searchRequestString от карты
+    useEffect(() => {
+        console.log('Map component received searchRequestString:', searchRequestString);
+    }, [searchRequestString]);
+
+    // Добавляем useEffect для обработки searchRequestString и создания новой трата в таблице
+    useEffect(() => {
+        if (searchRequestString) {
+            // Вызываем функцию addExpense для создания новой трата
+            addExpenseBySerch(searchRequestString);
+        }
+    }, [searchRequestString]);
+
 
     useEffect(() => {
         const fetchData = async () => {
@@ -163,6 +180,35 @@ const Map = () => {
         fetchData();
     }, [tripId]);
     
+    const addExpenseBySerch = (searchLoc: string) => {
+        const newExpense = { 
+            id: Date.now(), 
+            title: searchLoc, 
+            categoryTitle: '', 
+            participants: '', 
+            payers: '', 
+            pricePerOne: '', 
+            totalPrice: '', 
+            day: currentDay 
+        };
+        
+        if (!expensesByDay[dayGuids[currentDay]]) {
+            setExpensesByDay(prevState => ({
+                ...prevState,
+                [dayGuids[currentDay]]: [newExpense]
+            }));
+        } else {
+            setExpensesByDay(prevState => ({
+                ...prevState,
+                [dayGuids[currentDay]]: [...prevState[dayGuids[currentDay]], newExpense]
+            }));
+        }
+
+        // Обновляем состояние expenses, передавая новый массив расходов
+        setExpenses([...expenses, newExpense]);
+
+        setTableRows(tableRows + 1);
+    };
 
     const addExpense = () => {
         const newExpense = { 
@@ -262,8 +308,8 @@ const Map = () => {
     return (
         <div className={styles.container}>
             <div className={styles.mapContainer}>
-                <div className={styles.map}>
-                    <YandexMap points={points} />
+            <div className={styles.map}>
+                    <YandexMap points={points} setSearchRequestString={setSearchRequestString} />
                 </div>
                 <div className={styles.infoBlock}>
                     <div>

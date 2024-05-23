@@ -6,6 +6,7 @@ import axios, { AxiosError } from 'axios';
 
 type IProps = {
     points: TPoint[],
+    setSearchRequestString: React.Dispatch<React.SetStateAction<string>> // Добавляем setSearchRequestString в тип пропсов
 }
 
 interface SearchResult {
@@ -14,7 +15,7 @@ interface SearchResult {
     }
 }
 
-const YandexMap = ({ points }: IProps) => {
+const YandexMap = ({ points, setSearchRequestString }: IProps) => { // Добавляем setSearchRequestString в параметры компонента
     const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
     const [mapInstance, setMapInstance] = useState<any>(null);
     const [searchControl, setSearchControl] = useState<any>(null);
@@ -46,16 +47,16 @@ const YandexMap = ({ points }: IProps) => {
             searchControl.events.add('resultselect', (e: any) => handleResultSelect(e.get('result')));
             searchControl.events.add('resultshow', (e: any) => handleSearchResult(e.get('result')));
             searchControl.events.add('resultselect', function(e: { get: (arg0: string) => any; }) {
-                var searchRequestString = searchControl.getRequestString();// получить строку запроса
-                alert(searchRequestString);
-                 
+                const requestString = searchControl.getRequestString(); // Переименовываем переменную, чтобы не перекрыть внешнюю переменную
+                alert(requestString);
                 var results = searchControl.getResultsArray();
+                setSearchRequestString(requestString); // Устанавливаем searchRequestString через переданную функцию
                 var selected = e.get('index');
                 var point = results[selected].geometry.getCoordinates();
                 alert(point);
             });
         }
-    }, [searchControl]);
+    }, [searchControl, setSearchRequestString]); // Добавляем setSearchRequestString в зависимости useEffect
 
     return (
         <div className={styles.wrapper}>
@@ -69,7 +70,7 @@ const YandexMap = ({ points }: IProps) => {
                 >
                     {mapInstance && (
                         <SearchControl
-                            options={{ float: 'right' }}
+                            options={{ float: 'left' }}
                             instanceRef={(ref) => ref && handleSearchControlLoad(ref)}
                         />
                     )}
