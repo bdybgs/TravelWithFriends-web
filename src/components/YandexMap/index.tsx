@@ -4,7 +4,6 @@ import styles from './index.module.css';
 import { TPoint } from "../../types/TPoint";
 import axios, { AxiosError } from 'axios';
 
-
 type IProps = {
     points: TPoint[],
 }
@@ -26,7 +25,8 @@ const YandexMap = ({ points }: IProps) => {
 
     const handleResultSelect = (result: any) => {
         console.log("Selected:", result);
-        // Здесь вы можете обработать выбранное местоположение, например, добавить его в список точек или что-то еще
+        alert('Щёлк ' + result);
+        setSearchResult(result);
     };
 
     const handleMapLoad = (ymaps: any) => {
@@ -37,13 +37,25 @@ const YandexMap = ({ points }: IProps) => {
         setSearchControl(ref);
     };
 
+    const handlePlacemarkClick = () => {
+        alert('Событие произошло');
+    };
+
     useEffect(() => {
         if (searchControl) {
             searchControl.events.add('resultselect', (e: any) => handleResultSelect(e.get('result')));
             searchControl.events.add('resultshow', (e: any) => handleSearchResult(e.get('result')));
+            searchControl.events.add('resultselect', function(e: { get: (arg0: string) => any; }) {
+                var searchRequestString = searchControl.getRequestString();// получить строку запроса
+                alert(searchRequestString);
+                 
+                var results = searchControl.getResultsArray();
+                var selected = e.get('index');
+                var point = results[selected].geometry.getCoordinates();
+                alert(point);
+            });
         }
     }, [searchControl]);
-
 
     return (
         <div className={styles.wrapper}>
@@ -62,10 +74,19 @@ const YandexMap = ({ points }: IProps) => {
                         />
                     )}
                     {points.map(({ x, y }) => (
-                        <Placemark key={`${x}-${y}`} options={{ hasHint: true }} defaultGeometry={[x, y]} />
+                        <Placemark
+                            key={`${x}-${y}`}
+                            options={{ hasHint: true }}
+                            defaultGeometry={[x, y]}
+                            onClick={handlePlacemarkClick}
+                        />
                     ))}
                     {searchResult && searchResult.geometry && (
-                        <Placemark geometry={searchResult.geometry.getCoordinates()} options={{ hasHint: true }} />
+                        <Placemark
+                            geometry={searchResult.geometry.getCoordinates()}
+                            options={{ hasHint: true }}
+                            //onClick={handlePlacemarkClick}
+                        />
                     )}
                 </Map>
             </YMaps>
