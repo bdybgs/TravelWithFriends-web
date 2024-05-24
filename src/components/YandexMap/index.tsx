@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { Map, Placemark, SearchControl, YMaps } from "@pbe/react-yandex-maps";
 import styles from './index.module.css';
 import { TPoint } from "../../types/TPoint";
@@ -6,6 +6,7 @@ import axios, { AxiosError } from 'axios';
 
 type IProps = {
     points: TPoint[],
+    textPoints: string[],
     setSearchRequestString: React.Dispatch<React.SetStateAction<string>> // Добавляем setSearchRequestString в тип пропсов
 }
 
@@ -15,11 +16,11 @@ interface SearchResult {
     }
 }
 
-const YandexMap = ({ points, setSearchRequestString }: IProps) => { // Добавляем setSearchRequestString в параметры компонента
+const YandexMap = ({ points, textPoints, setSearchRequestString }: IProps) => { // Добавляем setSearchRequestString в параметры компонента
     const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
     const [mapInstance, setMapInstance] = useState<any>(null);
     const [searchControl, setSearchControl] = useState<any>(null);
-
+    
     const handleSearchResult = (result: SearchResult | null) => {
         setSearchResult(result);
     };
@@ -57,6 +58,10 @@ const YandexMap = ({ points, setSearchRequestString }: IProps) => { // Доба�
             });
         }
     }, [searchControl, setSearchRequestString]); // Добавляем setSearchRequestString в зависимости useEffect
+    
+    useEffect(() => {
+        console.log(textPoints);
+    }, [textPoints]);
 
     return (
         <div className={styles.wrapper}>

@@ -22,6 +22,7 @@ const Map = () => {
     const [participantEmail, setParticipantEmail] = useState<string>('');
 
     const [points, setPoints] = useState<TPoint[]>([]);
+    const [textPoints, setTextPoints] = useState<string[]>([]);
     const [expenses, setExpenses] = useState<any[]>([]); // Хранение данных таблицы
     const [tableRows, setTableRows] = useState<number>(0); // Количество строк в таблице
    
@@ -50,6 +51,21 @@ const Map = () => {
             setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
         }, 2000);
     }, []);
+
+    useEffect(() => {
+        setTimeout(() => {
+            const pointB = "Москва, Красная площадь";
+            const pointC = "Москва, Павелецкий вокзал";
+            const pointD = "Москва, Таганская";
+    
+            // Создаем массив текстовых точек
+            const textPoints = Array.of(pointB, pointC, pointD);
+    
+            // Устанавливаем массив текстовых точек в state
+            setTextPoints(textPoints);
+        }, 2000);
+    }, []);
+    
 
     // Добавляем useEffect для вывода в консоль при получении значения searchRequestString от карты
     useEffect(() => {
@@ -133,6 +149,7 @@ const Map = () => {
                 console.log("внутри юзэффекта: "+ activities.length)
                 // Обновляем количество строк в таблице в зависимости от количества активностей
                 setTableRows(activities.length);
+                
             } catch (error) {
                 console.error('Ошибка при получении активностей для дня:', error);
             }
@@ -308,14 +325,14 @@ const Map = () => {
     };
 
     const handleClickShowRoute = () => {
-        
+
     }
     
     return (
         <div className={styles.container}>
             <div className={styles.mapContainer}>
             <div className={styles.map}>
-                    <YandexMap points={points} setSearchRequestString={setSearchRequestString} />
+                    <YandexMap points={points} textPoints = {textPoints}setSearchRequestString={setSearchRequestString} />
                 </div>
                 <div className={styles.infoBlock}>
                     <div>

@@ -222,7 +222,7 @@ const ExpenseTable: React.FC<Props> = ({
     
   return (
     <div className={styles.tableContainer}>
-        <div className={styles.tableWrapper}>
+        {/* <div className={styles.tableWrapper}> */}
             <div>День {currentDay + 1}</div>
             <table className={styles.table} id="table">
                 <thead>
@@ -309,7 +309,7 @@ const ExpenseTable: React.FC<Props> = ({
                     ))}
                 </tbody>
             </table>
-        </div>
+        {/* </div> */}
         <Button onClick={addExpense} className={styles.tablebutton}>
             Добавить трату
         </Button>
