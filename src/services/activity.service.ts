@@ -7,6 +7,7 @@ const API_URL_STAT = "http://localhost:10000/v1/Statistics/";
 export interface ActivityData {
     dayId: string;
     title: string;
+    fromSearch: boolean,
     categoryId: string;
     pricePerOne: number;
     totalPrice: number;
