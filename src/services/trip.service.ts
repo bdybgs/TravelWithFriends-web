@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useLocation, Navigate } from "react-router-dom";
-import React from 'react';
+import React, { useState, useEffect } from "react";
 
 interface TripData {
     creatorId: string;
@@ -21,6 +21,8 @@ const API_URL_TRIPS = "http://localhost:10000/v1/Trip/";
 
 //const API_URL_ACCOUNTS = "https://localhost:7084/v1/Accounts/getid/";
 const API_URL_ACCOUNTS = "http://localhost:10000/v1/Accounts/getid/";
+
+const API_URL_GET_STATUS = "http://localhost:10000/v1/Accounts/status/";
 
 const API_URL_USERTRIPS = "http://localhost:10000/v1/Trip/usertrips/";
 
@@ -73,6 +75,20 @@ export const getCreatorId = (creatorEmail: string) => {
       throw error;
     });
 
+};
+export const getUserStatus = async (userId: string) => {
+  try {
+    const user = localStorage.getItem("user");
+    const accessToken = user ? JSON.parse(user).accessToken : null;
+    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+
+    const response = await axios.get(API_URL_GET_STATUS + encodeURIComponent(userId), { headers });
+    console.log("статус " + response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при получении статуса пользователя:", error);
+    throw error;
+  }
 };
 
 export const getUserTrips = async (userEmail: string) => {
@@ -153,7 +169,7 @@ export const addParticipant = async (tripId: string, userEmail: string) => {
     return response.data;
   } catch (error) {
     console.error('There has been a problem with your fetch operation:', error);
-    return null;
+    throw error;
   }
 };
 
