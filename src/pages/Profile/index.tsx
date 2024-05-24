@@ -4,6 +4,7 @@ import styles from "./index.module.css";
 import CreatePopup from "./CreatePopup";
 import { createTrip, getCreatorId, getUserTrips, getUserStatus } from "../../services/trip.service";
 import TripCard from "./TripCard";
+import Tooltip from "./Tooltip";
 
 const Profile: React.FC = () => {
     const userEmail = localStorage.getItem("email");
@@ -89,90 +90,79 @@ const Profile: React.FC = () => {
         if (userStatus === 0) {
             return "Стандартный";
         } else if (userStatus === 2) {
-            return "Про";
+            return "Pro";
         } else {
             return "Загрузка статуса...";
         }
     };
 
-    const renderTooltip = () => {
-        if (userStatus === 0) {
-            return "Ваш статус Стандартный. Вы можете повысить его до Про, оформив подписку.";
-        } else if (userStatus === 2) {
-            return "У вас оформлена подписка для получения статуса Про.";
-        } else {
-            return "";
-        }
-    };
-
     return (
-        <div className="container">
-            <header className="jumbotron">
-                {/*<h3>
-                    <strong>{currentUser.username}</strong> Profile
-                </h3>*/}
-            </header>
+        <div className="profileContainer">
+          <header className="jumbotron">
+            {/*<h3>
+              <strong>{currentUser.username}</strong> Profile
+            </h3>*/}
+          </header>
+      
+          <div className={styles.userInfo}>
             <p>
-                <strong>Email:</strong> {userEmail ? userEmail : "Email not available"}
+              <strong>Email:</strong> {userEmail ? userEmail : "Email not available"}
             </p>
             <p>
-                <strong>Status:</strong> {renderStatus()} 
-                <span
-                    className={styles.tooltipIcon}
-                    onMouseEnter={() => setTooltipVisible(true)}
-                    onMouseLeave={() => setTooltipVisible(false)}
-                >
-                    ?
-                </span>
-                {isTooltipVisible && (
-                    <div className={styles.tooltip}>
-                        {renderTooltip()}
-                    </div>
+              <strong>Status:</strong> {renderStatus()} 
+              <span
+                className={styles.tooltipIcon}
+                onMouseEnter={() => setTooltipVisible(true)}
+                onMouseLeave={() => setTooltipVisible(false)}
+              >
+                ?
+              </span>
+              {isTooltipVisible && (
+                <Tooltip userStatus={userStatus} />
                 )}
+
             </p>
-            <div className={styles.createButton}>
-                <button onClick={handleCreatePopupOpen} className={styles.button}>Создать</button>
-            </div>
-            <strong>Authorities:</strong>
-            {/*<ul>
-                {currentUser.roles &&
-                    currentUser.roles.map((role: string, index: number) => <li key={index}>{role}</li>)}
-            </ul>*/}
-
-            <strong>User Trips:</strong>
-            <div className={styles.tripList}>
-                {trips.map((trip: any) => (
-                    <TripCard
-                        key={trip.id}
-                        title={trip.title}
-                        text={`Город: ${trip.city}`}
-                        dateStart={trip.dateStart}
-                        dateEnd={trip.dateEnd}
-                        participants={trip.participants}
-                        author={trip.creatorName} // Используем creatorName в качестве автора
-                        onClick={() => {
-                            handleMapClick(trip.id);
-                        }}
-                    />
-                ))}
-            </div>
-
-            {isCreatePopupOpen && <CreatePopup
-                creatorName={userEmail || ""}
-                creatorId={creatorId}
-                city={city}
-                numOfParticipants={numOfParticipants}
-                title="" // Пустая строка, так как этот пропс не используется
-                dateStart="" // Пустая строка, так как этот пропс не используется
-                dateEnd="" // Пустая строка, так как этот пропс не используется
-                hotelTitle="" // Пустая строка, так как этот пропс не используется
-                isPublicated={false} // Логическое значение, можете передать true или false в зависимости от ваших потребностей
-                onClose={handleCreatePopupClose}
-                onCreate={handleCreateTrip}
-            />}
-            {errorMessage && <div className="error">{errorMessage}</div>}
+          </div>
+      
+          <div className={styles.createButton}>
+            <button onClick={handleCreatePopupOpen} className={styles.button}>Создать</button>
+          </div>
+      
+          {/* <strong>User Trips:</strong> */}
+          <div className={styles.tripList}>
+            {trips.map((trip: any) => (
+              <TripCard
+                key={trip.id}
+                title={trip.title}
+                text={`Город: ${trip.city}`}
+                dateStart={trip.dateStart}
+                dateEnd={trip.dateEnd}
+                participants={trip.participants}
+                author={trip.creatorName} // Используем creatorName в качестве автора
+                onClick={() => {
+                  handleMapClick(trip.id);
+                }}
+              />
+            ))}
+          </div>
+      
+          {isCreatePopupOpen && <CreatePopup
+            creatorName={userEmail || ""}
+            creatorId={creatorId}
+            city={city}
+            numOfParticipants={numOfParticipants}
+            title="" // Пустая строка, так как этот пропс не используется
+            dateStart="" // Пустая строка, так как этот пропс не используется
+            dateEnd="" // Пустая строка, так как этот пропс не используется
+            hotelTitle="" // Пустая строка, так как этот пропс не используется
+            isPublicated={false} // Логическое значение, можете передать true или false в зависимости от ваших потребностей
+            onClose={handleCreatePopupClose}
+            onCreate={handleCreateTrip}
+          />}
+          {errorMessage && <div className="error">{errorMessage}</div>}
         </div>
-    );
+      );
+      
 };
 
 export default Profile;
