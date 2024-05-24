@@ -44,6 +44,7 @@ const Map = () => {
     const [totalparticipants, setTotalParticipants] = useState<string[]>([]);
 
     const [searchRequestString, setSearchRequestString] = useState<string>("");
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     
     useEffect(() => {
@@ -315,12 +316,13 @@ const Map = () => {
                 if (response) {
                     setTripData(response);
                     setParticipantEmail(''); // Очищаем поле ввода email
+                    setErrorMessage(null); // Сбрасываем сообщение об ошибке
                     alert('Участник успешно добавлен.');
                 }
             })
             .catch((error) => {
                 console.error('Error adding participant:', error);
-                alert('Произошла ошибка при добавлении участника. Пожалуйста, попробуйте еще раз.');
+                setErrorMessage('Участник не найден. Пожалуйста, попробуйте еще раз.');
             });
     };
 
@@ -350,6 +352,7 @@ const Map = () => {
                                 onChange={(e) => setParticipantEmail(e.target.value)}
                             />
                             <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
+                            {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                         </div>
     
                         <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>

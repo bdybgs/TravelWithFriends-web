@@ -100,6 +100,7 @@
 
 .addButton {
     margin-left: 10px;
+    margin-top: 5px;
 }
 
 .buttonsContainer {
@@ -158,4 +159,16 @@ body.scroll-bottom .fullWidthContainer {
 .chartContainer {
     flex: 0 0 48%;
     margin-bottom: 20px;
+}
+.errorMessage {
+    color: red; /* Красный цвет текста */
+    margin-top: 10px; /* Отступ сверху */
+    margin-left: 10px; 
+    font-size: 14px; /* Размер шрифта */
+    background-color: #f8d7da; /* Светло-красный фон */
+    border: 1px solid #f5c6cb; /* Красная рамка */
+    padding: 10px; /* Внутренние отступы */
+    border-radius: 4px; /* Скругленные углы */
+    max-width: 300px; /* Максимальная ширина блока */
+    text-align: center; /* Выравнивание текста по центру */
 }

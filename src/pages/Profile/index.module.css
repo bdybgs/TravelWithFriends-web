@@ -21,4 +21,22 @@
   .button:hover {
     background-color: #0056b3;
   }
-  
+  /* index.module.css */
+.tooltipIcon {
+  cursor: pointer;
+  margin-left: 5px;
+  background-color: #ccc;
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-weight: bold;
+}
+
+.tooltip {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin-top: 5px;
+}

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import styles from "./index.module.css";
 import CreatePopup from "./CreatePopup";
-import { createTrip, getCreatorId, getUserTrips } from "../../services/trip.service";
+import { createTrip, getCreatorId, getUserTrips, getUserStatus } from "../../services/trip.service";
 import TripCard from "./TripCard";
-import { useNavigate } from 'react-router-dom';
 
 const Profile: React.FC = () => {
     const userEmail = localStorage.getItem("email");
@@ -12,12 +11,17 @@ const Profile: React.FC = () => {
     const [city, setCity] = useState("");
     const [numOfParticipants, setNumOfParticipants] = useState<number>(0); 
     const [creatorId, setCreatorId] = useState<string>("");
+    const [userId, setUserId] = useState<string>('');
+    const [userStatus, setUserStatus] = useState<number | null>(null); // изменено на number | null
     const [trips, setTrips] = useState([]);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [isTooltipVisible, setTooltipVisible] = useState(false); // состояние для управления видимостью балуна
     const navigate = useNavigate();
 
     useEffect(() => {
         if (userEmail) {
             getCrId(userEmail);
+            fetchUserIdAndStatus(userEmail);
         }
     }, [userEmail]);
 
@@ -34,6 +38,7 @@ const Profile: React.FC = () => {
     const handleCreatePopupClose = () => {
         setCreatePopupOpen(false);
     };
+
     const getCrId = async (email: string) => {
         try {
             const id = await getCreatorId(email);
@@ -55,7 +60,6 @@ const Profile: React.FC = () => {
     
     const handleCreateTrip = () => {
         if (userEmail) {
-            // После создания нового трипа обновляем список путешествий
             fetchUserTrips(userEmail);
         } else {
             console.error("Email пользователя не доступен.");
@@ -66,6 +70,41 @@ const Profile: React.FC = () => {
         navigate(`/map/${tripId}`);
     };
 
+    const fetchUserIdAndStatus = async (email: string) => {
+        try {
+            const id = await getCreatorId(email);
+            setUserId(id);
+
+            const status = await getUserStatus(id);
+            console.log("статус получен:", status);
+            setUserStatus(status);
+            setErrorMessage(null);
+        } catch (error) {
+            setErrorMessage('Произошла ошибка при получении статуса пользователя.');
+            console.error("Error fetching user status:", error);
+        }
+    };
+
+    const renderStatus = () => {
+        if (userStatus === 0) {
+            return "Стандартный";
+        } else if (userStatus === 2) {
+            return "Про";
+        } else {
+            return "Загрузка статуса...";
+        }
+    };
+
+    const renderTooltip = () => {
+        if (userStatus === 0) {
+            return "Ваш статус Стандартный. Вы можете повысить его до Про, оформив подписку.";
+        } else if (userStatus === 2) {
+            return "У вас оформлена подписка для получения статуса Про.";
+        } else {
+            return "";
+        }
+    };
+
     return (
         <div className="container">
             <header className="jumbotron">
@@ -74,8 +113,22 @@ const Profile: React.FC = () => {
                 </h3>*/}
             </header>
             <p>
-                {/* Проверяем, что userEmail не равен null, прежде чем его использовать */}
                 <strong>Email:</strong> {userEmail ? userEmail : "Email not available"}
+            </p>
+            <p>
+                <strong>Status:</strong> {renderStatus()} 
+                <span
+                    className={styles.tooltipIcon}
+                    onMouseEnter={() => setTooltipVisible(true)}
+                    onMouseLeave={() => setTooltipVisible(false)}
+                >
+                    ?
+                </span>
+                {isTooltipVisible && (
+                    <div className={styles.tooltip}>
+                        {renderTooltip()}
+                    </div>
+                )}
             </p>
             <div className={styles.createButton}>
                 <button onClick={handleCreatePopupOpen} className={styles.button}>Создать</button>
@@ -117,6 +170,7 @@ const Profile: React.FC = () => {
                 onClose={handleCreatePopupClose}
                 onCreate={handleCreateTrip}
             />}
+            {errorMessage && <div className="error">{errorMessage}</div>}
         </div>
     );
 };
