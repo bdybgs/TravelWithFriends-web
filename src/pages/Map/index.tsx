@@ -14,6 +14,14 @@ import { sendEvent } from "../../utils/Metriks";
 import ExpenseTable from './ExpenseTable';
 import Statistics from './Statistics';
 
+
+interface Activity {
+    id: string;
+    title: string;
+    fromSearch: boolean;
+    // другие поля...
+}
+
 const Map = () => {
     const { tripId } = useParams(); // Извлекаем параметр tripId из URL
 
@@ -27,7 +35,7 @@ const Map = () => {
     const [tableRows, setTableRows] = useState<number>(0); // Количество строк в таблице
    
     const blockRef = useRef<HTMLDivElement>(null);
-
+    const [mapUpdateTrigger, setMapUpdateTrigger] = useState(false);
 
     const [currentDay, setCurrentDay] = useState(0); // Индекс текущего дня
     const [totalDays, setTotalDays] = useState<number>(3);
@@ -52,21 +60,6 @@ const Map = () => {
             setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
         }, 2000);
     }, []);
-
-    useEffect(() => {
-        setTimeout(() => {
-            const pointB = "Москва, Красная площадь";
-            const pointC = "Москва, Павелецкий вокзал";
-            const pointD = "Москва, Таганская";
-    
-            // Создаем массив текстовых точек
-            const textPoints = Array.of(pointB, pointC, pointD);
-    
-            // Устанавливаем массив текстовых точек в state
-            setTextPoints(textPoints);
-        }, 2000);
-    }, []);
-    
 
     // Добавляем useEffect для вывода в консоль при получении значения searchRequestString от карты
     useEffect(() => {
@@ -150,6 +143,13 @@ const Map = () => {
                 console.log("внутри юзэффекта: "+ activities.length)
                 // Обновляем количество строк в таблице в зависимости от количества активностей
                 setTableRows(activities.length);
+
+                // Фильтруем активности, у которых fromSearch = true, и сохраняем их названия
+                const filteredActivities = activities.filter((activity: Activity) => activity.fromSearch);
+                const filteredTextPoints = filteredActivities.map((activity: Activity) => activity.title);
+
+                // Устанавливаем массив текстовых точек в state
+                setTextPoints(filteredTextPoints);
                 
             } catch (error) {
                 console.error('Ошибка при получении активностей для дня:', error);
@@ -327,14 +327,14 @@ const Map = () => {
     };
 
     const handleClickShowRoute = () => {
-
-    }
+        setMapUpdateTrigger(prev => !prev); // изменяйте состояние для обновления карты
+    };
     
     return (
         <div className={styles.container}>
             <div className={styles.mapContainer}>
             <div className={styles.map}>
-                    <YandexMap points={points} textPoints = {textPoints}setSearchRequestString={setSearchRequestString} />
+                    <YandexMap points={points} textPoints = {textPoints}setSearchRequestString={setSearchRequestString} mapUpdateTrigger={mapUpdateTrigger}/>
                 </div>
                 <div className={styles.infoBlock}>
                     <div>
