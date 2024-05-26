@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+// @ts-ignore
 import { YMaps, Map } from 'react-yandex-maps';
 
 const Contacts = () => {
