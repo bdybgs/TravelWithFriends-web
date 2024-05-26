@@ -9,8 +9,9 @@
 .primary nav ul {
     list-style-type: none;
     padding: 0;
-    margin-left: 350px;
+    margin-left: 10%; /* Используем относительное значение */
 }
+
 
 .dropdown {
     position: relative;
@@ -41,14 +42,14 @@
 
 
 .primary nav ul a {
-    text-decoration: none; /* Убираем подчеркивание ссылок */
-    padding: 10px 20px; /* Внутренние отступы ссылок */
-    margin-right: 50px; /* Внешние отступы между ссылками */
-    border-radius: 5px; /* Закругляем углы */
+    text-decoration: none;
+    padding: 10px 2vw; /* Используем относительный размер от ширины видимой области */
+    margin-right: 2vw; /* Отступы также задаем относительно ширины видимой области */
+    border-radius: 5px;
     color: white;
     font-size: 20px;
-
 }
+
 
 .primary nav ul a:hover {
     background-color: #555; /* Изменяем цвет фона при наведении на ссылку */

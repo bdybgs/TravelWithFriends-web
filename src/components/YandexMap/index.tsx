@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 // @ts-ignore
-import { YMaps, Map, Placemark, SearchControl } from 'react-yandex-maps';
+import { YMaps, Map, Placemark } from 'react-yandex-maps';
 import styles from './index.module.css';
 import { TPoint } from "../../types/TPoint";
 
 type IProps = {
     points: TPoint[],
     textPoints: string[],
-    setSearchRequestString: React.Dispatch<React.SetStateAction<string>>
+    setSearchRequestString: React.Dispatch<React.SetStateAction<string>>,
+    mapUpdateTrigger: boolean
 }
 
 interface SearchResult {
@@ -16,64 +17,49 @@ interface SearchResult {
     }
 }
 
-const YandexMap = ({ points, textPoints, setSearchRequestString }: IProps) => {
+const YandexMap = ({points, textPoints, setSearchRequestString, mapUpdateTrigger  }: IProps) => {
     const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
     const mapRef = useRef<any>(null);
     const multiRouteRef = useRef<any>(null);
     const searchControlRef = useRef<any>(null);
+    const [isTextPointsReady, setIsTextPointsReady] = useState(false);
 
+    const [selectedResult, setSelectedResult] = useState<any>(null);
 
-    const handleSearchResult = (result: SearchResult | null) => {
+    const handleResultSelect = (e: any) => {
+        const result = e.get('target').getResultsArray()[e.get('index')];
+        setSelectedResult(result);
         setSearchResult(result);
     };
 
-    const handleResultSelect = (result: any) => {
-        console.log("Selected:", result);
-        alert('Щёлк ' + result);
-        setSearchResult(result);
-    };
-
-    const addSearchControl = (ymaps: any) => {
-        if (mapRef.current && !searchControlRef.current) {
-            const searchControl = new ymaps.control.SearchControl({
-                options: {
-                    float: 'right',
-                    size: 'large',
-                    placeholderContent: 'Search...',
-                    noPlacemark: true
-                }
-            });
-            mapRef.current.controls.add(searchControl);
-            searchControlRef.current = searchControl;
-
-            searchControl.events.add('resultselect', (e: any) => handleResultSelect(e.get('result')));
-            searchControl.events.add('resultshow', (e: any) => handleSearchResult(e.get('result')));
-            searchControl.events.add('resultselect', (e: any) => {
-                const requestString = searchControl.getRequestString();
-                alert(requestString);
-                const results = searchControl.getResultsArray();
-                setSearchRequestString(requestString);
-                const selected = e.get('index');
-                const point = results[selected].geometry.getCoordinates();
-                alert(point);
-            });
+    useEffect(() => {
+        if (selectedResult && typeof selectedResult === 'object') {
+            const resultText = selectedResult.properties.get('text');
+            setSearchRequestString(resultText);
         }
-    };
+    }, [selectedResult]);
 
-
-/*
-    const handleSearchControlLoad = (ref: any) => {
-        setSearchControl(ref);
-    };*/
-    const handlePlacemarkClick = () => {
-        alert('Событие произошло');
-    };
+    useEffect(() => {
+        // выполняется вторым 
+        console.log("2) textPoints: " + textPoints)
+        console.log("2) Первая точка из textPoints: " + textPoints[0]);
+        setIsTextPointsReady(true); // Устанавливаем готовность textPoints
+    }, [textPoints]);
 
     const addMultiRoute = (ymaps: any) => {
-        const pointA = [55.749, 37.524];
-        const pointB = "Москва, Красная площадь";
-        const pointC = "Москва, Павелецкий вокзал";
-        const pointD = "Москва, Таганская";
+        // выполняется первым 
+        const pointA = textPoints[0];
+        const pointB = textPoints[1];
+        const pointC = textPoints[2];
+        const pointD = textPoints[3];
+        const pointE = textPoints[4];
+        // const pointB = "Москва, Красная площадь";
+        // const pointC = "Москва, Павелецкий вокзал";
+        // const pointD = "Москва, Таганская";
+
+        console.log("В addMultiRoute) точка А: " + pointA);
+        console.log("В addMultiRoute) textPoints: " + textPoints);
+        console.log("В addMultiRoute) Первая точка из textPoints: " + textPoints[0]);
 
         if (multiRouteRef.current && mapRef.current) {
             mapRef.current.geoObjects.remove(multiRouteRef.current);
@@ -81,7 +67,7 @@ const YandexMap = ({ points, textPoints, setSearchRequestString }: IProps) => {
 
         const multiRoute = new ymaps.multiRouter.MultiRoute(
             {
-                referencePoints: [pointA, pointB, pointC, pointD],
+                referencePoints: [pointA, pointB, pointC, pointD, pointE],
                 params: {
                     routingMode: "pedestrian"
                 }
@@ -97,28 +83,26 @@ const YandexMap = ({ points, textPoints, setSearchRequestString }: IProps) => {
         }
     };
 
-   /* useEffect(() => {
-        if (searchControl) {
-            searchControl.events.add('resultselect', (e: any) => handleResultSelect(e.get('result')));
-            searchControl.events.add('resultshow', (e: any) => handleSearchResult(e.get('result')));
-            searchControl.events.add('resultselect', function(e: { get: (arg0: string) => any; }) {
-                const requestString = searchControl.getRequestString();
-                alert(requestString);
-                const results = searchControl.getResultsArray();
-                setSearchRequestString(requestString);
-                const selected = e.get('index');
-                const point = results[selected].geometry.getCoordinates();
-                alert(point);
+    useEffect(() => {
+        if (mapRef.current) {
+            mapRef.current.controls.add('searchControl');
+            mapRef.current.events.add('boundschange', () => {
+                if (searchControlRef.current) {
+                    //searchControlRef.current.setBounds(mapRef.current.getBounds());
+                }
             });
         }
-    }, [searchControl, setSearchRequestString]);*/
+    }, []);
 
     useEffect(() => {
-        console.log(textPoints);
-    }, [textPoints]);
+        if (isTextPointsReady && mapRef.current && mapRef.current.ymaps) {
+            addMultiRoute(mapRef.current.ymaps);
+        }
+        console.log(mapUpdateTrigger);
+    }, [isTextPointsReady, mapUpdateTrigger]);
 
     return (
-        <div className={styles.wrapper}>
+        <div key={mapUpdateTrigger ? "true" : "false"} className={styles.wrapper}> {/* Обновляем ключ */}
             <YMaps query={{ apikey: '7c779eb6-845b-4c78-a612-a2397737206e' }}>
                 <Map
                     defaultState={{ center: [55.749, 37.524], zoom: 9 }}
@@ -127,20 +111,26 @@ const YandexMap = ({ points, textPoints, setSearchRequestString }: IProps) => {
                     // @ts-ignore
                     instanceRef={mapRef}
                     onLoad={(ymaps: any) => {
-                        addMultiRoute(ymaps)
-                        addSearchControl(ymaps);
+                        if (isTextPointsReady) {
+                            addMultiRoute(ymaps);
+                        }
+                        if (mapRef.current) {
+                            searchControlRef.current = new ymaps.control.SearchControl({
+                                options: {
+                                    float: 'right'
+                                }
+                            });
+                            mapRef.current.controls.add(searchControlRef.current);
+                            searchControlRef.current.events.add('resultselect', handleResultSelect);
+                        }
                     }}
                     modules={["multiRouter.MultiRoute", "control.SearchControl"]}
                 >
-                    {/*<SearchControl
-                        options={{ float: 'right', size: 'large', placeholderContent: 'Search...' }}
-                    />*/}
                     {points.map(({ x, y }) => (
                         <Placemark
                             key={`${x}-${y}`}
                             geometry={[x, y]}
                             options={{ hasHint: true }}
-                            onClick={handlePlacemarkClick}
                         />
                     ))}
                     {searchResult && searchResult.geometry && (
