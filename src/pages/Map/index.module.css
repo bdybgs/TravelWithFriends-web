@@ -22,6 +22,7 @@
 
 .infoBlock {
     flex-basis: 30%;
+    margin-left: 0.5%;
     padding: 20px;
     background-color: #f4f4f4;
     color: black;
