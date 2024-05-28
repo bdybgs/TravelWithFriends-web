@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useLocation, Navigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
+import {logout} from "./auth.service";
 
 interface TripData {
     creatorId: string;
@@ -138,12 +139,11 @@ export const getTrip = async (tripId: string) => {
     return response.data;
   } catch (error : any) {
     console.error('There has been a problem with your fetch operation:', error);
-    // Проверяем, является ли ошибка ошибкой 401
     if (error.response && error.response.status === 401) {
-      // Возвращаем компонент перенаправления на страницу авторизации
+      window.location.href = '/login';
+      logout();
       return React.createElement(Navigate, { to: "/login" });
     } else {
-      // Продолжаем обработку других ошибок
       return null;
     }
   }
