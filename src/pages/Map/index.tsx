@@ -131,7 +131,7 @@ const Map = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (!tripId || tripId === '000') return;
+                if (!tripId || tripId === '000' || !dayGuids[currentDay]) return;
 
                 const activities = await getActiviesByDay(dayGuids[currentDay]); // Используем GUID дня для запроса активностей
 
@@ -258,6 +258,8 @@ const Map = () => {
         setExpenses([...expenses, newExpense]);
 
         setTableRows(tableRows + 1);
+
+        sendEvent('reachGoal', 'AddExpenseClick');
     };
           
     const removeExpense = (id: number, day: number) => {
@@ -328,6 +330,8 @@ const Map = () => {
 
     const handleClickShowRoute = () => {
         setMapUpdateTrigger(prev => !prev); // изменяйте состояние для обновления карты
+        sendEvent('reachGoal', 'ShowRouteClick');
+
     };
     
     return (

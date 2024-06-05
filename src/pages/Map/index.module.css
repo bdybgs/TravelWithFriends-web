@@ -22,11 +22,11 @@
 
 .infoBlock {
     flex-basis: 30%;
-    margin-left: 0.5%;
     padding: 20px;
+    margin-left: 0.5%;
     background-color: #f4f4f4;
     color: black;
-    overflow-y: auto;
+    overflow-y: auto;    
 }
 
 .tableContainer {

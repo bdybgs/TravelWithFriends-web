@@ -1,7 +1,9 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:10000/v1/Accounts";
-const API_URL_LOGIN = "http://localhost:10000/v1/Auth";
+// const API_URL = "http://localhost:10000/v1/Accounts";
+// const API_URL_LOGIN = "http://localhost:10000/v1/Auth";
+const API_URL = "http://localhost:8080/v1/Accounts";
+const API_URL_LOGIN = "http://localhost:8080/v1/Auth";
 
 // Функция регистрации с передачей данных через query параметры
 export const register = (name: string, email: string, password: string) => {

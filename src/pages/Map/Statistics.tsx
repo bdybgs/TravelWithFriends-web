@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
 import styles from "./index.module.css";
 
@@ -9,7 +9,26 @@ interface StatisticsProps {
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
+const useLoadingData = <T,>(data: T | undefined | null) => {
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        if (data !== undefined && data !== null) {
+            setIsLoading(false);
+        }
+    }, [data]);
+
+    return isLoading;
+};
+
 const Statistics: React.FC<StatisticsProps> = ({ teamExpensesData, categoryExpensesData }) => {
+    const isLoadingTeamData = useLoadingData(teamExpensesData);
+    const isLoadingCategoryData = useLoadingData(categoryExpensesData);
+
+    if (isLoadingTeamData || isLoadingCategoryData) {
+        return <div>Загрузка...</div>;
+    }
+
     return (
         <div id="statisticElement" className={styles.fullWidthContainer}>
             <div className={styles.fullWidthContent}>

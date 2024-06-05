@@ -105,7 +105,7 @@ const Login: React.FC<Props> = () => {
                 {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
-                <span>Login</span>
+                <span>Вход</span>
               </button>
             </div>
             <button
@@ -113,7 +113,7 @@ const Login: React.FC<Props> = () => {
                     style={{ marginTop: '20px' }}
                     disabled={loading}
                     onClick={() => window.location.href = '/registration'}>
-              <span>Registration</span>
+              <span>Регистрация</span>
             </button>
 
 
