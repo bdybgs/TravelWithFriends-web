@@ -18,34 +18,34 @@ interface TripData {
     id: string;
   }
 
-// const API_URL_TRIPS = "http://localhost:10000/v1/Trip/";
+const API_URL_TRIPS = "http://localhost:10000/v1/Trip/";
 
-// const API_URL_ACCOUNTS = "http://localhost:10000/v1/Accounts/getid/";
+const API_URL_ACCOUNTS = "http://localhost:10000/v1/Accounts/getid/";
 
-// const API_URL_GET_STATUS = "http://localhost:10000/v1/Accounts/status/";
+const API_URL_GET_STATUS = "http://localhost:10000/v1/Accounts/status/";
 
-// const API_URL_USERTRIPS = "http://localhost:10000/v1/Trip/usertrips/";
+const API_URL_USERTRIPS = "http://localhost:10000/v1/Trip/usertrips/";
 
-// const API_URL_ADDPARTICIPANT = "http://localhost:10000/v1/Trip/usertrips/";
+const API_URL_ADDPARTICIPANT = "http://localhost:10000/v1/Trip/usertrips/";
 
-// const API_URL_GETDAYS = "http://localhost:10000/v1/Trip/getdays/";
+const API_URL_GETDAYS = "http://localhost:10000/v1/Trip/getdays/";
 
-// const API_URL_GETCATEGORIES = "http://localhost:10000/v1/Category/";
+const API_URL_GETCATEGORIES = "http://localhost:10000/v1/Category/";
 
-
-const API_URL_TRIPS = "http://localhost:8080/v1/Trip/";
-
-const API_URL_ACCOUNTS = "http://localhost:8080/v1/Accounts/getid/";
-
-const API_URL_GET_STATUS = "http://localhost:8080/v1/Accounts/status/";
-
-const API_URL_USERTRIPS = "http://localhost:8080/v1/Trip/usertrips/";
-
-const API_URL_ADDPARTICIPANT = "http://localhost:8080/v1/Trip/usertrips/";
-
-const API_URL_GETDAYS = "http://localhost:8080/v1/Trip/getdays/";
-
-const API_URL_GETCATEGORIES = "http://localhost:8080/v1/Category/";
+//
+// const API_URL_TRIPS = "http://localhost:8080/v1/Trip/";
+//
+// const API_URL_ACCOUNTS = "http://localhost:8080/v1/Accounts/getid/";
+//
+// const API_URL_GET_STATUS = "http://localhost:8080/v1/Accounts/status/";
+//
+// const API_URL_USERTRIPS = "http://localhost:8080/v1/Trip/usertrips/";
+//
+// const API_URL_ADDPARTICIPANT = "http://localhost:8080/v1/Trip/usertrips/";
+//
+// const API_URL_GETDAYS = "http://localhost:8080/v1/Trip/getdays/";
+//
+// const API_URL_GETCATEGORIES = "http://localhost:8080/v1/Category/";
 
 export const createTrip = (tripData: TripData) => {
   // Получаем токен доступа из локального хранилища
@@ -139,7 +139,7 @@ export const getTrip = async (tripId: string) => {
 
     const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
 
-    const response = await axios.get(`http://localhost:8080/v1/Trip/${tripId}`, {
+    const response = await axios.get(`http://localhost:10000/v1/Trip/${tripId}`, {
       headers: {
         ...headers,
         'Accept': 'application/json'

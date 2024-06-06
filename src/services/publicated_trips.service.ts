@@ -1,7 +1,7 @@
 import axios from "axios";
 
-//const API_URL_TRIPS = "http://localhost:10000/v1/Trip/publicated";
- const API_URL_TRIPS = "http://localhost:8080/v1/Trip/publicated";
+const API_URL_TRIPS = "http://localhost:10000/v1/Trip/publicated";
+ // const API_URL_TRIPS = "http://localhost:8080/v1/Trip/publicated";
 
 
 export const getTrips = () => {

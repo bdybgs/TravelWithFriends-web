@@ -259,10 +259,10 @@ const ExpenseTable: React.FC<Props> = ({
   return (
       <div className={styles.tableContainer}>
         {/* <div className={styles.tableWrapper}> */}
-        <div>День {currentDay + 1}</div>
+        <div style={{ color: 'black' }}>День {currentDay + 1}</div>
         <table className={styles.table} id="table">
           <thead>
-          <tr>
+          <tr style={{ color: 'black' }}>
             <th>Название</th>
             <th>Категория</th>
             <th>Участники</th>

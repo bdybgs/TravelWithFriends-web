@@ -342,10 +342,10 @@ const Map = () => {
                 </div>
                 <div className={styles.infoBlock}>
                     <div>
-                        <div className={styles.textdata}>Название: {tripData.title}</div>
+                        <div className={styles.textdata}>{tripData.title}</div>
                         <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
                         <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
-                        <div className={styles.textdata}>Город: {tripData.city}</div>
+                        <div className={styles.textdata}>{tripData.city}</div>
                         <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
     
                         <div className={styles.addParticipantContainer}>
