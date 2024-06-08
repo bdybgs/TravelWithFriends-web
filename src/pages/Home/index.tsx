@@ -54,7 +54,7 @@ const Home = () => {
                 </h1>
             </div>
             <div className={styles.linkWrapper}>
-                <Link to="/map" className={styles.roundedLink} onClick={handleClick}>
+                <Link to="/profile" state={{ openCreatePopup: true }} className={styles.roundedLink}>
                     Создать путешествие
                 </Link>
             </div>

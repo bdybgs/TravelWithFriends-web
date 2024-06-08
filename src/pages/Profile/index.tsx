@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import styles from "./index.module.css";
 import CreatePopup from "./CreatePopup";
 import { createTrip, getCreatorId, getUserTrips, getUserStatus } from "../../services/trip.service";
@@ -10,21 +10,26 @@ const Profile: React.FC = () => {
     const userEmail = localStorage.getItem("email");
     const [isCreatePopupOpen, setCreatePopupOpen] = useState(false);
     const [city, setCity] = useState("");
-    const [numOfParticipants, setNumOfParticipants] = useState<number>(0); 
+    const [numOfParticipants, setNumOfParticipants] = useState<number>(0);
     const [creatorId, setCreatorId] = useState<string>("");
     const [userId, setUserId] = useState<string>('');
-    const [userStatus, setUserStatus] = useState<number | null>(null); // изменено на number | null
+    const [userStatus, setUserStatus] = useState<number | null>(null);
     const [trips, setTrips] = useState([]);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [isTooltipVisible, setTooltipVisible] = useState(false); // состояние для управления видимостью балуна
+    const [isTooltipVisible, setTooltipVisible] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         if (userEmail) {
             getCrId(userEmail);
             fetchUserIdAndStatus(userEmail);
         }
-    }, [userEmail]);
+
+        if (location.state?.openCreatePopup) {
+            setCreatePopupOpen(true);
+        }
+    }, [userEmail, location.state]);
 
     useEffect(() => {
         if (userEmail) {
@@ -58,15 +63,29 @@ const Profile: React.FC = () => {
             console.error("Error fetching user trips:", error);
         }
     };
-    
+
     const handleCreateTrip = () => {
         if (userEmail) {
+            // Проверяем статус пользователя
+            if (userStatus === 0) { // Стандартный статус
+                if (trips.length >= 5) { // Проверяем лимит на количество путешествий
+                    alert('Вы достигли лимита на количество путешествий (5).');
+                    return;
+                }
+            } else if (userStatus === 2) { // Про статус
+                if (trips.length >= 15) { // Проверяем лимит на количество путешествий
+                    alert('Вы достигли лимита на количество путешествий (15).');
+                    return;
+                }
+            }
+
             fetchUserTrips(userEmail);
         } else {
             console.error("Email пользователя не доступен.");
         }
     };
-    
+
+
     const handleMapClick = (tripId: string) => {
         navigate(`/map/${tripId}`);
     };
@@ -98,71 +117,68 @@ const Profile: React.FC = () => {
 
     return (
         <div className="profileContainer">
-          <header className="jumbotron">
-            {/*<h3>
-              <strong>{currentUser.username}</strong> Profile
-            </h3>*/}
-          </header>
-      
-          <div className={styles.userInfo}>
-            <p>
-              <strong>Email:</strong> {userEmail ? userEmail : "Email not available"}
-            </p>
-            <p>
-              <strong>Status:</strong> {renderStatus()} 
-              <span
-                className={styles.tooltipIcon}
-                onMouseEnter={() => setTooltipVisible(true)}
-                onMouseLeave={() => setTooltipVisible(false)}
-              >
-                ?
-              </span>
-              {isTooltipVisible && (
-                <Tooltip userStatus={userStatus} />
-                )}
+            <header className="jumbotron">
+                {/*<h3>
+                    <strong>{currentUser.username}</strong> Profile
+                </h3>*/}
+            </header>
 
-            </p>
-          </div>
-      
-          <div className={styles.createButton}>
-            <button onClick={handleCreatePopupOpen} className={styles.button}>Создать</button>
-          </div>
-      
-          {/* <strong>User Trips:</strong> */}
-          <div className={styles.tripList}>
-            {trips.map((trip: any) => (
-              <TripCard
-                key={trip.id}
-                title={trip.title}
-                text={`Город: ${trip.city}`}
-                dateStart={trip.dateStart}
-                dateEnd={trip.dateEnd}
-                participants={trip.participants}
-                author={trip.creatorName} // Используем creatorName в качестве автора
-                onClick={() => {
-                  handleMapClick(trip.id);
-                }}
-              />
-            ))}
-          </div>
-      
-          {isCreatePopupOpen && <CreatePopup
-            creatorName={userEmail || ""}
-            creatorId={creatorId}
-            city={city}
-            numOfParticipants={numOfParticipants}
-            title="" // Пустая строка, так как этот пропс не используется
-            dateStart="" // Пустая строка, так как этот пропс не используется
-            dateEnd="" // Пустая строка, так как этот пропс не используется
-            hotelTitle="" // Пустая строка, так как этот пропс не используется
-            isPublicated={false} // Логическое значение, можете передать true или false в зависимости от ваших потребностей
-            onClose={handleCreatePopupClose}
-            onCreate={handleCreateTrip}
-          />}
-          {errorMessage && <div className="error">{errorMessage}</div>}
+            <div className={styles.userInfo}>
+                <p>
+                    <strong>Email:</strong> {userEmail ? userEmail : "Email not available"}
+                </p>
+                <p>
+                    <strong>Status:</strong> {renderStatus()}
+                    <span
+                        className={styles.tooltipIcon}
+                        onMouseEnter={() => setTooltipVisible(true)}
+                        onMouseLeave={() => setTooltipVisible(false)}
+                    >
+                        ?
+                    </span>
+                    {isTooltipVisible && (
+                        <Tooltip userStatus={userStatus} />
+                    )}
+                </p>
+            </div>
+
+            <div className={styles.createButton}>
+                <button onClick={handleCreatePopupOpen} className={styles.button}>Создать</button>
+            </div>
+
+            <div className={styles.tripList}>
+                {trips.map((trip: any) => (
+                    <TripCard
+                        key={trip.id}
+                        title={trip.title}
+                        text={`Город: ${trip.city}`}
+                        dateStart={trip.dateStart}
+                        dateEnd={trip.dateEnd}
+                        participants={trip.participants}
+                        author={trip.creatorName}
+                        onClick={() => {
+                            handleMapClick(trip.id);
+                        }}
+                    />
+                ))}
+            </div>
+
+            {isCreatePopupOpen && <CreatePopup
+                creatorName={userEmail || ""}
+                creatorId={creatorId}
+                city={city}
+                numOfParticipants={numOfParticipants}
+                title=""
+                dateStart=""
+                dateEnd=""
+                hotelTitle=""
+                isPublicated={false}
+                onClose={handleCreatePopupClose}
+                onCreate={handleCreateTrip}
+            />}
+            {errorMessage && <div className="error">{errorMessage}</div>}
         </div>
-      );
-      
+    );
 };
 
 export default Profile;
