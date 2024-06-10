@@ -4,7 +4,7 @@ import Card from "./Card";
 import { getTrips } from "../../services/publicated_trips.service";
 import { getCurrentUser } from "../../services/auth.service";
 import TripPopup from "./TripPopup";
-import { useNavigate } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 const PublicatedTrips: React.FC = () => {
   const [trips, setTrips] = useState<any[]>([]);
@@ -53,11 +53,11 @@ const PublicatedTrips: React.FC = () => {
     const userEmail = localStorage.getItem("email");
     return userEmail !== null; // Возвращает true, если пользователь авторизован, и false в противном случае
   };
-  
 
   const handleCreate = () => {
     if (isAuthenticated()) {
-      navigate("/map/000");
+      navigate("/profile", { state: { openCreatePopup: true } });
+
     } else {
       // Показать попап с надписью "Авторизуйтесь!"
       alert("Авторизуйтесь!");

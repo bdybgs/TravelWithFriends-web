@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Formik, Form, Field } from 'formik';
 import { DatePicker, Button, Input, Switch, InputNumber } from 'antd';
-import { createTrip, getCreatorId } from "../../services/trip.service";
+import { createTrip, getCreatorId, addParticipant } from "../../services/trip.service";
 import styles from "./CreatePopup.module.css";
 
 const { RangePicker } = DatePicker;
@@ -70,7 +70,7 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                 hotelTitle: values.hotelTitle,
                 isPublicated: isPublicatedState,
             });
-            
+
             // После успешного получения creatorId отправляем запрос на создание путешествия
             const tripData = {
                 creatorId,
@@ -83,7 +83,7 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                 isPublicated: isPublicatedState,
             };
             await createTrip(tripData);
-            
+
             // Вызываем onCreate после успешного создания путешествия
             onCreate();
             onClose();
