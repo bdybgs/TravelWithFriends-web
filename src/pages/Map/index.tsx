@@ -389,11 +389,11 @@ const Map = () => {
                 <div className={styles.infoBlock}>
                     <div>
                         <div className={styles.textdata}>{tripData.title}</div>
-                        <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
-                        <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
+                        <div className={styles.textdata}>Участников: {tripData.participants.length}</div>
+                        <div className={styles.textdata}>{tripData.participants ? tripData.participants.join(', ') : ''}</div>
                         <div className={styles.textdata}>{tripData.city}</div>
                         <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
-
+                        <div className={styles.textdata}>{tripData.dateStart} - {tripData.dateEnd}</div>
                         <div className={styles.addParticipantContainer}>
                             <Input
                                 className={styles.inputField}
@@ -405,7 +405,7 @@ const Map = () => {
                             {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                         </div>
 
-                        <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
+                        
                     </div>
                 </div>
             </div>
