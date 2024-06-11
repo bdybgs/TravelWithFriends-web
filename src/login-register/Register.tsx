@@ -28,10 +28,10 @@ const Register: React.FC = () => {
                     val.toString().length >= 3 &&
                     val.toString().length <= 20
             )
-            .required("This field is required!"),
+            .required("Это поле является обязательным!"),
         email: Yup.string()
-            .email("This is not a valid email.")
-            .required("This field is required!"),
+            .email("Это поле является обязательным.")
+            .required("Это поле является обязательным!"),
         password: Yup.string()
             .test(
                 "len",
@@ -41,7 +41,7 @@ const Register: React.FC = () => {
                     val.toString().length >= 6 &&
                     val.toString().length <= 40
             )
-            .required("This field is required!"),
+            .required("Это поле является обязательным!"),
     });
 
     const handleRegister = (formValue: IUser) => {
@@ -81,8 +81,9 @@ const Register: React.FC = () => {
                             {!successful && (
                                 <div>
                                     <div className="form-group">
-                                        <label htmlFor="name"> Username </label>
-                                        <Field name="name" type="text" className="inputField"/>
+                                        <Field name="name" type="text" className={`${styles.inputField} form-control`}
+                                               placeholder="Имя"
+                                        />
                                         <ErrorMessage
                                             name="name"
                                             component="div"
@@ -91,8 +92,8 @@ const Register: React.FC = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="email"> Email </label>
-                                        <Field name="email" type="email" className="inputField"/>
+                                        <Field name="email" type="email" className={`${styles.inputField} form-control`}
+                                               placeholder="Почта"/>
                                         <ErrorMessage
                                             name="email"
                                             component="div"
@@ -101,11 +102,11 @@ const Register: React.FC = () => {
                                     </div>
 
                                     <div className="form-group">
-                                        <label htmlFor="password"> Password </label>
                                         <Field
                                             name="password"
                                             type="password"
-                                        />
+                                            className={`${styles.inputField} form-control`}
+                                            placeholder="Пароль"/>
                                         <ErrorMessage
                                             name="password"
                                             component="div"
@@ -116,7 +117,7 @@ const Register: React.FC = () => {
                                     <div className="form-group">
                                         <button type="submit"
                                                 className={`${styles.button} btn btn-primary btn-block`}>
-                                            Sign Up
+                                            Зарегистрироваться
                                         </button>
                                     </div>
                                 </div>

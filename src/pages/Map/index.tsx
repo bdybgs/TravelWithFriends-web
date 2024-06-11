@@ -9,11 +9,11 @@ import styles from "./index.module.css";
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 import { getTrip, addParticipant, getDays, getCategories} from "../../services/trip.service";
-import { getActiviesByDay,getStat } from "../../services/activity.service";
+import { getActiviesByDay, getStat } from "../../services/activity.service";
 import { sendEvent } from "../../utils/Metriks";
 import ExpenseTable from './ExpenseTable';
 import Statistics from './Statistics';
-
+import {getStatus, getUserIdByEmail} from "../../services/user.service";
 
 interface Activity {
     id: string;
@@ -24,6 +24,10 @@ interface Activity {
 
 const Map = () => {
     const { tripId } = useParams(); // Извлекаем параметр tripId из URL
+    const userEmail = localStorage.getItem("email");
+    const [participantLimit, setParticipantLimit] = useState<number>(7);
+    const [expenseLimitPerDay, setExpenseLimitPerDay] = useState<number>(15);
+
 
     const [tripData, setTripData] = useState<any>({});
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -33,28 +37,30 @@ const Map = () => {
     const [textPoints, setTextPoints] = useState<string[]>([]);
     const [expenses, setExpenses] = useState<any[]>([]); // Хранение данных таблицы
     const [tableRows, setTableRows] = useState<number>(0); // Количество строк в таблице
-   
+
     const blockRef = useRef<HTMLDivElement>(null);
     const [mapUpdateTrigger, setMapUpdateTrigger] = useState(false);
 
     const [currentDay, setCurrentDay] = useState(0); // Индекс текущего дня
     const [totalDays, setTotalDays] = useState<number>(3);
-    
+
     const [teamExpensesData, setTeamExpensesData] = useState([]);
     const [categoryExpensesData, setCategoryExpensesData] = useState([]);
 
     // Добавляем состояние для хранения соответствия между индексами дней и их GUID'ами
     const [dayGuids, setDayGuids] = useState<{ [key: number]: string }>({});
-        
+
     // Изменения в expensesByDay: теперь используем GUID дня в качестве ключа
     const [expensesByDay, setExpensesByDay] = useState<{ [key: string]: any[] }>({});
 
-    const [totalparticipants, setTotalParticipants] = useState<string[]>([]);
+    const [totalParticipants, setTotalParticipants] = useState<string[]>([]);
 
     const [searchRequestString, setSearchRequestString] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    
+
+
+
     useEffect(() => {
         setTimeout(() => {
             setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
@@ -66,14 +72,38 @@ const Map = () => {
         console.log('Map component received searchRequestString:', searchRequestString);
     }, [searchRequestString]);
 
+    useEffect(() => {
+        if (!tripId) return;
+
+        const getUserStatus = async () => {
+            try {
+                // @ts-ignore
+                const userId = await getUserIdByEmail(userEmail.toString());
+                const status = await getStatus(userId);
+
+                // Установка лимитов в зависимости от статуса пользователя
+                if (status === 2) {
+                    setParticipantLimit(15);
+                    setExpenseLimitPerDay(20);
+                } else {
+                    setParticipantLimit(7);
+                    setExpenseLimitPerDay(15);
+                }
+            } catch (error) {
+                console.error('Error fetching user status:', error);
+            }
+        };
+
+        getUserStatus();
+    }, [userEmail, tripId]);
+
     // Добавляем useEffect для обработки searchRequestString и создания новой трата в таблице
     useEffect(() => {
         if (searchRequestString) {
             // Вызываем функцию addExpense для создания новой трата
-            addExpenseBySerch(searchRequestString);
+            addExpenseBySearch(searchRequestString);
         }
     }, [searchRequestString]);
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -86,12 +116,11 @@ const Map = () => {
                 console.error('Error fetching trip data:', error);
             }
         };
-    
+
         fetchData();
     }, [tripId]);
-    
 
- // useEffect для получения дней и создания соответствия между индексами и GUID'ами
+    // useEffect для получения дней и создания соответствия между индексами и GUID'ами
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -112,9 +141,9 @@ const Map = () => {
 
                 // Создаем пустые массивы расходов для каждого дня, используя GUID дня в качестве ключа
                 const expensesByDayObject: { [key: string]: any[] } = {};
-                days.forEach((dayGuid: string) => {                    
+                days.forEach((dayGuid: string) => {
                     expensesByDayObject[dayGuid] = [];
-                });                
+                });
                 setExpensesByDay(expensesByDayObject);
 
                 // Обновляем общее количество дней после получения данных с сервера
@@ -131,7 +160,7 @@ const Map = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (!tripId || tripId === '000') return;
+                if (!tripId || tripId === '000' || !dayGuids[currentDay]) return;
 
                 const activities = await getActiviesByDay(dayGuids[currentDay]); // Используем GUID дня для запроса активностей
 
@@ -150,7 +179,7 @@ const Map = () => {
 
                 // Устанавливаем массив текстовых точек в state
                 setTextPoints(filteredTextPoints);
-                
+
             } catch (error) {
                 console.error('Ошибка при получении активностей для дня:', error);
             }
@@ -167,7 +196,6 @@ const Map = () => {
         }
     }, [tripData.participants]);
 
-
     useEffect(() => {
         // Получаем высоту таблицы
         const tableHeight = document.getElementById('table')?.offsetHeight || 0;
@@ -181,7 +209,7 @@ const Map = () => {
         const fetchData = async () => {
             try {
                 if (!tripId || tripId === '000') return;
-    
+
                 const statData = await getStat(tripId);
                 console.log("Статистика получена:", statData);
                 if (statData) {
@@ -194,23 +222,30 @@ const Map = () => {
                 console.error('Error fetching statistics:', error);
             }
         };
-    
+
         fetchData();
     }, [tripId]);
-    
-    const addExpenseBySerch = (searchLoc: string) => {
-        const newExpense = { 
-            id: Date.now(), 
-            title: searchLoc, 
+
+    const addExpenseBySearch = (searchLoc: string) => {
+        // Проверка лимита расходов в день
+        const dayExpenses = expensesByDay[dayGuids[currentDay]] || [];
+        if (dayExpenses.length >= expenseLimitPerDay) {
+            alert('Вы достигли лимита расходов на этот день.');
+            return;
+        }
+
+        const newExpense = {
+            id: Date.now(),
+            title: searchLoc,
             fromSearch: true,
-            categoryTitle: '', 
-            participants: '', 
-            payers: '', 
-            pricePerOne: '', 
-            totalPrice: '', 
-            day: currentDay 
+            categoryTitle: '',
+            participants: '',
+            payers: '',
+            pricePerOne: '',
+            totalPrice: '',
+            day: currentDay
         };
-        
+
         if (!expensesByDay[dayGuids[currentDay]]) {
             setExpensesByDay(prevState => ({
                 ...prevState,
@@ -230,18 +265,25 @@ const Map = () => {
     };
 
     const addExpense = () => {
-        const newExpense = { 
-            id: Date.now(), 
-            title: '', 
+        // Проверка лимита расходов в день
+        const dayExpenses = expensesByDay[dayGuids[currentDay]] || [];
+        if (dayExpenses.length >= expenseLimitPerDay) {
+            alert('Вы достигли лимита расходов на этот день.');
+            return;
+        }
+
+        const newExpense = {
+            id: Date.now(),
+            title: '',
             fromSearch: false,
-            categoryTitle: '', 
-            participants: '', 
-            payers: '', 
-            pricePerOne: '', 
-            totalPrice: '', 
-            day: currentDay 
+            categoryTitle: '',
+            participants: '',
+            payers: '',
+            pricePerOne: '',
+            totalPrice: '',
+            day: currentDay
         };
-        
+
         if (!expensesByDay[dayGuids[currentDay]]) {
             setExpensesByDay(prevState => ({
                 ...prevState,
@@ -258,11 +300,13 @@ const Map = () => {
         setExpenses([...expenses, newExpense]);
 
         setTableRows(tableRows + 1);
+
+        sendEvent('reachGoal', 'AddExpenseClick');
     };
-          
+
     const removeExpense = (id: number, day: number) => {
     };
-    
+
     const handleExpenseChange = (id: number, key: string, value: string) => {
         const updatedExpenses = expenses.map(expense => {
             if (expense.id === id) {
@@ -276,17 +320,17 @@ const Map = () => {
     const handleClickStatistic = async () => {
         sendEvent('reachGoal', 'StatisticButtonClick');
         const fullWidthContainer = document.querySelector('.fullWidthContainer');
-    
+
         const statisticElement = document.getElementById('statisticElement');
-    
+
         // Если элемент найден, прокручиваем страницу до него
         if (statisticElement) {
             statisticElement.scrollIntoView({ behavior: 'smooth' });
         }
-    
+
         try {
             if (!tripId || tripId === '000') return;
-    
+
             const statData = await getStat(tripId);
             console.log("Статистика получена:", statData);
             if (statData) {
@@ -299,13 +343,18 @@ const Map = () => {
             console.error('Error fetching statistics:', error);
         }
     };
-    
+
     const handleAddParticipant = () => {
         if (!tripId) {
             alert('Невозможно добавить участника: tripId не определен.');
             return;
         }
-    
+
+        if (totalParticipants.length >= participantLimit) {
+            alert('Вы достигли лимита участников.');
+            return;
+        }
+
         if (!participantEmail.trim()) {
             alert('Пожалуйста, введите email участника.');
             return;
@@ -328,22 +377,23 @@ const Map = () => {
 
     const handleClickShowRoute = () => {
         setMapUpdateTrigger(prev => !prev); // изменяйте состояние для обновления карты
+        sendEvent('reachGoal', 'ShowRouteClick');
     };
-    
+
     return (
         <div className={styles.container}>
             <div className={styles.mapContainer}>
-            <div className={styles.map}>
-                    <YandexMap points={points} textPoints = {textPoints}setSearchRequestString={setSearchRequestString} mapUpdateTrigger={mapUpdateTrigger}/>
+                <div className={styles.map}>
+                    <YandexMap points={points} textPoints = {textPoints} setSearchRequestString={setSearchRequestString} mapUpdateTrigger={mapUpdateTrigger}/>
                 </div>
                 <div className={styles.infoBlock}>
                     <div>
-                        <div className={styles.textdata}>Название: {tripData.title}</div>
+                        <div className={styles.textdata}>{tripData.title}</div>
                         <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
                         <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
-                        <div className={styles.textdata}>Город: {tripData.city}</div>
+                        <div className={styles.textdata}>{tripData.city}</div>
                         <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
-    
+
                         <div className={styles.addParticipantContainer}>
                             <Input
                                 className={styles.inputField}
@@ -354,7 +404,7 @@ const Map = () => {
                             <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
                             {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                         </div>
-    
+
                         <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
                     </div>
                 </div>
@@ -368,33 +418,31 @@ const Map = () => {
                             addExpense={addExpense}
                             removeExpense={removeExpense}
                             handleExpenseChange={handleExpenseChange}
-                            totalparticipants={totalparticipants}
+                            totalparticipants={totalParticipants}
                             dayGuid={dayGuids[currentDay]}
                         />
                     </div>
                     <div className={styles.buttonsContainer}>
-                    <div className={styles.navigationButtons}>
-                        <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
-                            <FaChevronLeft style={{ color: 'black' }} />
-                        </Button>
-                        <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
-                            <FaChevronRight style={{ color: 'black' }} />
-                        </Button>
-                    </div>
+                        <div className={styles.navigationButtons}>
+                            <Button onClick={() => setCurrentDay((currentDay - 1 + totalDays) % totalDays)}>
+                                <FaChevronLeft style={{ color: 'black' }} />
+                            </Button>
+                            <Button onClick={() => setCurrentDay((currentDay + 1) % totalDays)}>
+                                <FaChevronRight style={{ color: 'black' }} />
+                            </Button>
+                        </div>
                         <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickShowRoute}>На карте</Button>
                         <Button type="primary" style={{ backgroundColor: '#00A9B4', marginLeft: '10px' }} onClick={handleClickStatistic}>Статистика</Button>
                     </div>
                 </div>
             </div>
-    
+
             <Statistics
                 teamExpensesData={teamExpensesData}
                 categoryExpensesData={categoryExpensesData}
             />
         </div>
     );
-    
-    
 };
 
 export default Map;

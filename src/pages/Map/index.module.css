@@ -22,8 +22,8 @@
 
 .infoBlock {
     flex-basis: 30%;
-    margin-left: 0.5%;
     padding: 20px;
+    margin-left: 0.5%;
     background-color: #f4f4f4;
     color: black;
     overflow-y: auto;
@@ -38,7 +38,7 @@
 .block {
     width: calc(100% - 20px * 2);
     padding: 20px;
-    background-color: #222831;
+    background-color: white;
     color: white;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -162,7 +162,7 @@ body.scroll-bottom .fullWidthContainer {
 .errorMessage {
     color: red; /* Красный цвет текста */
     margin-top: 10px; /* Отступ сверху */
-    margin-left: 10px; 
+    margin-left: 10px;
     font-size: 14px; /* Размер шрифта */
     background-color: #f8d7da; /* Светло-красный фон */
     border: 1px solid #f5c6cb; /* Красная рамка */

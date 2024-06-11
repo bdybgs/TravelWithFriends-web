@@ -28,8 +28,8 @@ const Login: React.FC<Props> = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("This field is required!"),
-    password: Yup.string().required("This field is required!"),
+    name: Yup.string().required("Это поле является обязательным!"),
+    password: Yup.string().required("Это поле является обязательным!"),
   });
 
   const handleLogin = (formValue: { name: string; password: string }) => {
@@ -80,7 +80,7 @@ const Login: React.FC<Props> = () => {
           <Form>
             <div className="form-group">
               <Field name="name" type="text" className={`${styles.inputField} form-control`}
-                     placeholder="Username" />
+                     placeholder="Почта" />
               <ErrorMessage
                 name="username"
                 component="div"
@@ -90,7 +90,7 @@ const Login: React.FC<Props> = () => {
 
             <div className="form-group">
               <Field name="password" type="password" className={`${styles.inputField} form-control`}
-                     placeholder="Password" />
+                     placeholder="Пароль" />
               <ErrorMessage
                 name="password"
                 component="div"
@@ -105,7 +105,7 @@ const Login: React.FC<Props> = () => {
                 {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
-                <span>Login</span>
+                <span>Вход</span>
               </button>
             </div>
             <button
@@ -113,7 +113,7 @@ const Login: React.FC<Props> = () => {
                     style={{ marginTop: '20px' }}
                     disabled={loading}
                     onClick={() => window.location.href = '/registration'}>
-              <span>Registration</span>
+              <span>Регистрация</span>
             </button>
 
 

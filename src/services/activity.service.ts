@@ -3,6 +3,10 @@ import axios from "axios";
 const API_URL_GETACTSBYDAY = "http://localhost:10000/v1/Activity/day/";
 const API_URL_ADDACT = "http://localhost:10000/v1/Activity/";
 const API_URL_STAT = "http://localhost:10000/v1/Statistics/";
+//
+// const API_URL_GETACTSBYDAY = "http://localhost:8080/v1/Activity/day/";
+// const API_URL_ADDACT = "http://localhost:8080/v1/Activity/";
+// const API_URL_STAT = "http://localhost:8080/v1/Statistics/";
 
 export interface ActivityData {
     dayId: string;
@@ -123,7 +127,8 @@ export const getActiviesByDay = async (dayId: string) => {
 
   async function updateActivity2(activityId: string, requestData: any): Promise<void> {
     const url = `http://localhost:10000/v1/Activity/${activityId}`;
-  
+    // const url = `v1/Activity/${activityId}`;
+
     const headers = {
       'Accept': '*/*',
       'Content-Type': 'application/json'

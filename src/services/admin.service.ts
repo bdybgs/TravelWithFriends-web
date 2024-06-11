@@ -1,11 +1,14 @@
 import axios from "axios";
-
+//
+// const API_URL_ALL_TRIPS = "http://localhost:8080/v1/Trip";
+// const API_URL_DELETETRIP = "http://localhost:8080/v1/Trip";
 const API_URL_ALL_TRIPS = "http://localhost:10000/v1/Trip";
 const API_URL_DELETETRIP = "http://localhost:10000/v1/Trip";
 
 //const API_URL_TRIPS = "https://localhost:7084/v1/Trip/publicated";
 
 const API_URL = 'http://localhost:10000/v1/Accounts/status/';
+// const API_URL = 'http://localhost:8080/v1/Accounts/status/';
 
 export const getUserIdByEmail = async (email: string): Promise<string> => {
     try {
