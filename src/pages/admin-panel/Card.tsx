@@ -5,12 +5,14 @@ import { deleteTrip } from "../../services/admin.service";
 interface CardProps {
     tripId: string; // Добавляем tripId как уникальный идентификатор путешествия
     title: string;
+    city: string;
     text: string;
     author: string;
+    participants: string[];
     onClick: () => void; // Добавляем обработчик события onClick
 }
 
-const Card: React.FC<CardProps> = ({ tripId, title, text, author, onClick }) => {
+const Card: React.FC<CardProps> = ({ tripId, title, city, text, author, participants, onClick }) => {
     const [coordinates, setCoordinates] = useState<{ lat: number; lon: number } | null>(null);
 
     const handleDelete = async () => {
@@ -40,34 +42,21 @@ const Card: React.FC<CardProps> = ({ tripId, title, text, author, onClick }) => 
     }, [title]);
 
     return (
-        <div className={styles.card} onClick={onClick}>
-            {/* Добавляем кнопку удаления */}
-            <h2>{title}</h2>
-            <p>{text}</p>
-            <div style={{ width: "100%", height: "200px", position: "relative" }}>
-                <div style={{ width: "100%", height: "100%", position: "absolute", top: 0, left: 0 }}>
-                    {coordinates && (
-                        <iframe
-                            title="map"
-                            width="100%"
-                            height="100%"
-                            frameBorder="0"
-                            scrolling="no"
-                            marginHeight={0}
-                            marginWidth={0}
-                            src={`https://yandex.ru/map-widget/v1/-/CKVwjCRX?ll=${coordinates.lon},${coordinates.lat}&z=10&l=map`}
-                            style={{ border: 0 }}
-                            allowFullScreen={true}
-                        />
-                    )}
-                </div>
+        <div className={styles.card} onClick={onClick}>            
+            <div className={styles.cardContent}>
+                <h2>{title}</h2>
+                <p>{city}</p>
+                <p>{text}</p>
+                <p>{participants.join(', ')}</p>
             </div>
-            <div className={styles.authorChip}>{author}</div>
-            <div className={styles.deleteButtonContainer} onClick={(e) => {
-                e.stopPropagation();
-                handleDelete();
-            }}>
-                <div className={styles.deleteButton}>Удалить</div>
+            <div className={styles.cardFooter}>
+                <div className={styles.authorChip}>{author}</div>
+                <div className={styles.deleteButton} onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete();
+                }}>
+                    Удалить
+                </div>
             </div>
         </div>
     );

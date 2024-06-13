@@ -1,72 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap');
+
 .container {
-    padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  gap: 20px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.userManagement, .tripCards {
+  width: 70%;
+  background: #f5f5f5;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.userManagement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .inputContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .input {
-    padding: 10px;
-    font-size: 16px;
-    margin-bottom: 10px;
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.inputTrip {
+  padding: 10px;
+  font-size: 16px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  display: flex;
+  align-items: center; /* Центрируем текст по вертикали */
 }
 
 .buttonContainer {
-    display: flex;
-    gap: 10px;
+  display: flex;
+  gap: 10px;
 }
 
 .button {
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 20px;
-    transition: background-color 0.3s;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  transition: background-color 0.3s;
 }
 
-.button:hover {
-    background-color: #0056b3;
+.searchButton {
+  padding: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 9px;
+}
+
+.button:hover, .searchButton:hover {
+  background-color: #0056b3;
+}
+
+.tripCards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 500px; /* Ограничиваем высоту контейнера, чтобы включить скролл */
+  overflow-y: scroll; /* Добавляем скролл по вертикали */
+}
+
+.searchContainer {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center; /* Центрируем элементы по вертикали */
+  gap: 10px; /* Добавляем отступ между строкой поиска и кнопкой */
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Карточки в 3 колонки */
+  gap: 20px;
+  width: 100%;
+  justify-items: center; /* Центрирование карточек по горизонтали */
 }
 
 .row {
-    margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
 }
-
-
-.container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-}
-
-.row {
-    display: flex;
-    width: 100%;
-    justify-content: center; /* Центрирование карточек внутри ряда */
-}
-
-
-.card {
-    width: 30%;
-    height: 300px;
-    margin: 10px;
-    background-color: #696D74; /* Светло-бежевый цвет */
-}
-.container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-  }
-  
