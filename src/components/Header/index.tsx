@@ -9,6 +9,9 @@ import { logout } from "../../services/auth.service";
 const Header = () => {
     const auth = useContext(AuthContext);
 
+    const { isAdmin } = useContext(AuthContext);
+    console.log("isAdmin"+isAdmin);
+
     const handleLogout = () => {
         logout();
         if (auth?.signout) {
@@ -33,6 +36,7 @@ const Header = () => {
                             <Link to="/profile" state={{ openCreatePopup: true }}>
                                 Создать
                             </Link>
+                            {isAdmin && <Link to="/admin">Управление</Link>}
                             <Link to={"/#"} onClick={handleLogout}>Выход</Link>
                         </>
                     ) : (

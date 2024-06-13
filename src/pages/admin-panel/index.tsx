@@ -135,7 +135,7 @@ const AdminPanel: React.FC = () => {
             value={searchEmail}
             onChange={(e) => setSearchEmail(e.target.value)}
             placeholder="Введите email"
-            className={styles.input}
+            className={styles.inputTrip}
           />
           <button className={styles.searchButton} onClick={handleSearch}>
             <SearchOutlined />
