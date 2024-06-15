@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import { DatePicker, Button, Input, Switch, InputNumber } from 'antd';
 import { createTrip, getCreatorId, addParticipant } from "../../services/trip.service";
 import styles from "./CreatePopup.module.css";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -40,9 +41,10 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
             setNumOfParticipantsState(value);
         }
     };
-    const handleDateChange = (dates: any) => {
+    const handleDateChange = (dates: dayjs.Dayjs[]) => {
         if (dates && dates.length === 2) {
             const [start, end] = dates;
+
             const formattedStart = start.format('DD.MM.YYYY');
 
 
@@ -50,8 +52,8 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
             const formattedEnd = end.format('DD.MM.YYYY');
             setFormattedDateStart(formattedStart);
             setFormattedDateEnd(formattedEnd);
+            setDateRange(dates);
         }
-        setDateRange(dates);
     };
 
     const handlePublicatedChange = (checked: boolean) => {
@@ -82,6 +84,12 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                 hotelTitle: values.hotelTitle,
                 isPublicated: isPublicatedState,
             };
+            const [start, end] = dateRange;
+            if (start.add(3, "months").isBefore(end)) {
+                window.alert("Нельзя создать такой длинный трип")
+                return;
+            }
+
             await createTrip(tripData);
 
             // Вызываем onCreate после успешного создания путешествия
@@ -92,7 +100,6 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
         }
     };
     
-
     return (
         <div className={styles.popup}>
             <div className={styles.popupContent}>
@@ -124,6 +131,7 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                         </div>
                         <div className={styles.textdata}>Дата</div>
                         <div className={styles.datePicker}>
+                            {/* @ts-ignore */}
                             <RangePicker onChange={handleDateChange} />
                         </div>
                         <button type="submit" className={styles.createButton}>Создать</button>
