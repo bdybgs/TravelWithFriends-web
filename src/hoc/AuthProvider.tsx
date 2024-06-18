@@ -21,13 +21,14 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const localStorageUser =
     {
-        name: localStorage.getItem("name")
+        name: localStorage.getItem("user")
     }
     const [user, setUser] = useState<any>(localStorageUser);
     const [isAdmin, setIsAdmin] = useState<boolean>(Boolean(localStorage.getItem("isAdmin")));
 
     const signin = (newUser: any, callback: () => void) => {
         console.log("Signing in:", newUser);
+        console.log(newUser)
         setUser(newUser);
         setIsAdmin(newUser.isAdmin); // Устанавливаем статус администратора при входе
         localStorage.setItem("email", newUser.name);

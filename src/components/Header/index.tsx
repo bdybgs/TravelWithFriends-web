@@ -9,9 +9,10 @@ import { sendEvent } from "../../utils/Metriks"
 
 const Header = () => {
     const auth = useContext(AuthContext);
+    const userEmail = localStorage.getItem("email");
 
     const { isAdmin } = useContext(AuthContext);
-    console.log("isAdmin"+isAdmin);
+    console.log("isAdmin"+ isAdmin);
 
     const handleLogout = () => {
         logout();
@@ -21,9 +22,11 @@ const Header = () => {
             });
         }
     };
+
     const handleProfileClick = () => {
         sendEvent('reachGoal', 'ClickProfile');
     };
+
     return (
         <header className={styles.primary}>
             <Link to="/">
@@ -33,13 +36,13 @@ const Header = () => {
                 <ul>
                     <Link to="/publicatedtrips">Путешествия</Link>
                     <Link to="/about">Контакты</Link>
-                    {auth?.user ? (
+                    {auth?.user?.name  ? (
                         <>
                             <Link to="/profile" onClick={handleProfileClick}>Профиль</Link>
                             <Link to="/profile" state={{ openCreatePopup: true }}>
                                 Создать
                             </Link>
-                            {isAdmin && <Link to="/admin">Управление</Link>}
+                            {isAdmin === true && userEmail === "admin@travelwf.com" && <Link to="/admin">Управление</Link>}
                             <Link to={"/#"} onClick={handleLogout}>Выход</Link>
                         </>
                     ) : (

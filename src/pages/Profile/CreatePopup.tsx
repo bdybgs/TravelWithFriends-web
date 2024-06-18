@@ -21,9 +21,9 @@ interface CreatePopupProps {
     onCreate: () => void;
 }
 
-const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title,  numOfParticipants, city, dateStart, dateEnd, hotelTitle, isPublicated, onClose, onCreate }) => {
+const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title, numOfParticipants, city, dateStart, dateEnd, hotelTitle, isPublicated, onClose, onCreate }) => {
     const [numOfParticipantsState, setNumOfParticipantsState] = useState<number>(numOfParticipants);
-    const [dateRange, setDateRange] = useState<any[]>([]);
+    const [dateRange, setDateRange] = useState<dayjs.Dayjs[]>([]);
     const [formattedDateStart, setFormattedDateStart] = useState<string>(dateStart);
     const [formattedDateEnd, setFormattedDateEnd] = useState<string>(dateEnd);
     const [isPublicatedState, setIsPublicatedState] = useState<boolean>(isPublicated);
@@ -41,28 +41,28 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
             setNumOfParticipantsState(value);
         }
     };
-    const handleDateChange = (dates: dayjs.Dayjs[]) => {
+
+    const handleDateChange = (dates: dayjs.Dayjs[] | null, dateStrings: [string, string]) => {
         if (dates && dates.length === 2) {
             const [start, end] = dates;
             const formattedStart = start.format('DD.MM.YYYY');
-
-
-            console.log(formattedStart);
             const formattedEnd = end.format('DD.MM.YYYY');
             setFormattedDateStart(formattedStart);
             setFormattedDateEnd(formattedEnd);
-
             setDateRange(dates);
+        } else {
+            setFormattedDateStart('');
+            setFormattedDateEnd('');
+            setDateRange([]);
         }
-        setDateRange(dates);
     };
 
     const handlePublicatedChange = (checked: boolean) => {
         setIsPublicatedState(checked);
     };
+
     const handleSubmit = async (values: any) => {
         try {
-            // Выводим содержимое параметров перед вызовом метода создания путешествия
             console.log("Создание путешествия с параметрами:", {
                 creatorId,
                 title: values.title,
@@ -74,7 +74,6 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                 isPublicated: isPublicatedState,
             });
 
-            // После успешного получения creatorId отправляем запрос на создание путешествия
             const tripData = {
                 creatorId,
                 title: values.title,
@@ -88,24 +87,23 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
 
             const [start, end] = dateRange;
             if (start.add(3, "months").isBefore(end)) {
-                window.alert("Нельзя создать такой длинный трип")
+                window.alert("Слишком длинное путешествие. Длительность путешествия не должна превышать 3 месяца");
                 return;
             }
 
-            const createdTrip =  await createTrip(tripData);
+            const createdTrip = await createTrip(tripData);
 
             console.log("Созданное путешествие ID:", createdTrip.id);
-            console.log("Почта автора:", creatorName)
+            console.log("Почта автора:", creatorName);
 
             addParticipant(createdTrip.id, creatorName);
 
-            // Вызываем onCreate после успешного создания путешествия
             onCreate();
             onClose();
         } catch (error) {
             console.error("Ошибка при создании путешествия:", error);
         }
-    };    
+    };
 
     return (
         <div className={styles.overlay}>
@@ -119,19 +117,19 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                         <Form className={styles.form}>
                             <div className={styles.field}>
                                 <label>Название:</label>
-                                <Field name="title" type="text" as={Input} />
+                                <Field name="title" type="text" as={Input} maxLength={100} />
                             </div>
                             <div className={styles.field}>
                                 <label>Число участников:</label>
-                                <InputNumber value={numOfParticipantsState} onChange={handleNumOfParticipantsChange} />
+                                <InputNumber value={numOfParticipantsState} min={0} onChange={handleNumOfParticipantsChange} />
                             </div>
                             <div className={styles.field}>
                                 <label>Город:</label>
-                                <Field name="city" type="text" as={Input} />
+                                <Field name="city" type="text" as={Input} maxLength={100} />
                             </div>
                             <div className={styles.field}>
                                 <label>Отель:</label>
-                                <Field name="hotelTitle" type="text" as={Input} />
+                                <Field name="hotelTitle" type="text" as={Input} maxLength={100} />
                             </div>
                             <div className={styles.field}>
                                 <label>Публичное:</label>
@@ -149,7 +147,6 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
             </div>
         </div>
     );
-    
 };
 
 export default CreatePopup;
