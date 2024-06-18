@@ -3,6 +3,7 @@ import { Formik, Form, Field } from 'formik';
 import { DatePicker, Button, Input, Switch, InputNumber } from 'antd';
 import { createTrip, getCreatorId, addParticipant } from "../../services/trip.service";
 import styles from "./CreatePopup.module.css";
+import dayjs from "dayjs";
 
 const { RangePicker } = DatePicker;
 
@@ -40,7 +41,7 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
             setNumOfParticipantsState(value);
         }
     };
-    const handleDateChange = (dates: any) => {
+    const handleDateChange = (dates: dayjs.Dayjs[]) => {
         if (dates && dates.length === 2) {
             const [start, end] = dates;
             const formattedStart = start.format('DD.MM.YYYY');
@@ -50,6 +51,8 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
             const formattedEnd = end.format('DD.MM.YYYY');
             setFormattedDateStart(formattedStart);
             setFormattedDateEnd(formattedEnd);
+
+            setDateRange(dates);
         }
         setDateRange(dates);
     };
@@ -82,6 +85,13 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                 hotelTitle: values.hotelTitle,
                 isPublicated: isPublicatedState,
             };
+
+            const [start, end] = dateRange;
+            if (start.add(3, "months").isBefore(end)) {
+                window.alert("Нельзя создать такой длинный трип")
+                return;
+            }
+
             const createdTrip =  await createTrip(tripData);
 
             console.log("Созданное путешествие ID:", createdTrip.id);
@@ -127,8 +137,9 @@ const CreatePopup: React.FC<CreatePopupProps> = ({ creatorName, creatorId, title
                                 <label>Публичное:</label>
                                 <Switch checked={isPublicatedState} onChange={handlePublicatedChange} />
                             </div>
-                            <div className={styles.field}>
-                                <label>Дата:</label>
+                            <div className={styles.field}>Дата</div>
+                            <div className={styles.datePicker}>
+                                {/* @ts-ignore */}
                                 <RangePicker onChange={handleDateChange} />
                             </div>
                             <Button type="primary" htmlType="submit" className={styles.createButton}>Создать</Button>

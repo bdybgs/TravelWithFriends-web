@@ -5,6 +5,7 @@ import logo from "./logo.webp";
 import icon from "./icon.webp";
 import { AuthContext } from '../../hoc/AuthProvider';
 import { logout } from "../../services/auth.service";
+import { sendEvent } from "../../utils/Metriks"
 
 const Header = () => {
     const auth = useContext(AuthContext);
@@ -20,7 +21,9 @@ const Header = () => {
             });
         }
     };
-
+    const handleProfileClick = () => {
+        sendEvent('reachGoal', 'ClickProfile');
+    };
     return (
         <header className={styles.primary}>
             <Link to="/">
@@ -32,7 +35,7 @@ const Header = () => {
                     <Link to="/about">Контакты</Link>
                     {auth?.user ? (
                         <>
-                            <Link to="/profile">Профиль</Link>
+                            <Link to="/profile" onClick={handleProfileClick}>Профиль</Link>
                             <Link to="/profile" state={{ openCreatePopup: true }}>
                                 Создать
                             </Link>
