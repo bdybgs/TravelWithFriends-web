@@ -7,6 +7,7 @@ import { login } from "../services/auth.service";
 import styles from "./index.module.css";
 import logo from "./logo.webp";
 import {AuthContext} from "../hoc/AuthProvider";
+import { sendEvent } from "../utils/Metriks";
 
 
 
@@ -66,6 +67,15 @@ const Login: React.FC<Props> = () => {
     );
   };
 
+ const handleLoginClick = () => {
+  sendEvent('reachGoal', 'LoginClick');
+  };
+
+
+  const handleRegistrationClick = () => {
+    sendEvent('reachGoal', 'RegisterClick');
+    window.location.href = '/registration'
+  };
 
   return (
       <div className={styles.container}>
@@ -100,8 +110,9 @@ const Login: React.FC<Props> = () => {
 
 
             <div className="form-group">
-              <button type="submit" className={`${styles.button} btn btn-primary btn-block`}
-                      disabled={loading}>
+              <button type="submit" className={`${styles.button} btn btn-primary btn-block` }
+                      disabled={loading}
+                      onClick={handleLoginClick}>
                 {loading && (
                   <span className="spinner-border spinner-border-sm"></span>
                 )}
@@ -112,7 +123,7 @@ const Login: React.FC<Props> = () => {
                     className={`${styles.button} btn btn-primary btn-block margin-top`}
                     style={{ marginTop: '20px' }}
                     disabled={loading}
-                    onClick={() => window.location.href = '/registration'}>
+                    onClick={handleRegistrationClick }>
               <span>Регистрация</span>
             </button>
 

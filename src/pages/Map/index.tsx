@@ -58,12 +58,14 @@ const Map = () => {
     const [searchRequestString, setSearchRequestString] = useState<string>("");
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-
+    const [mapHeight, setMapHeight] = useState('35vh');
+    const mapContainerRef = useRef<HTMLDivElement>(null);
+    const isResizingRef = useRef(false);
 
 
     useEffect(() => {
         setTimeout(() => {
-            setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
+            //setPoints([{ x: 55.75, y: 37.57 }, { x: 56.75, y: 36.57 }, { x: 54.32, y: 36.16 }]);
         }, 2000);
     }, []);
 
@@ -380,20 +382,47 @@ const Map = () => {
         sendEvent('reachGoal', 'ShowRouteClick');
     };
 
+    const handleMouseDown = () => {
+        isResizingRef.current = true;
+    };
+
+    const handleMouseMove = (e: MouseEvent) => {
+        if (isResizingRef.current && mapContainerRef.current) {
+            const newHeight = e.clientY - (mapContainerRef.current?.getBoundingClientRect().top || 0);
+            setMapHeight(`${newHeight}px`);
+        }
+    };
+
+    const handleMouseUp = () => {
+        isResizingRef.current = false;
+    };
+
+    useEffect(() => {
+        const handleDocumentMouseMove = (e: MouseEvent) => handleMouseMove(e);
+        const handleDocumentMouseUp = () => handleMouseUp();
+
+        document.addEventListener('mousemove', handleDocumentMouseMove);
+        document.addEventListener('mouseup', handleDocumentMouseUp);
+
+        return () => {
+            document.removeEventListener('mousemove', handleDocumentMouseMove);
+            document.removeEventListener('mouseup', handleDocumentMouseUp);
+        };
+    }, []);
     return (
         <div className={styles.container}>
-            <div className={styles.mapContainer}>
+            <div className={styles.mapContainer} style={{ height: mapHeight }} ref={mapContainerRef}>
                 <div className={styles.map}>
-                    <YandexMap points={points} textPoints = {textPoints} setSearchRequestString={setSearchRequestString} mapUpdateTrigger={mapUpdateTrigger}/>
+                    <YandexMap points={points} textPoints={textPoints} setSearchRequestString={setSearchRequestString} mapUpdateTrigger={mapUpdateTrigger} />
                 </div>
                 <div className={styles.infoBlock}>
                     <div>
                         <div className={styles.textdata}>{tripData.title}</div>
-                        <div className={styles.textdata}>Число участников: {tripData.numOfParticipants}</div>
-                        <div className={styles.textdata}>Участники: {tripData.participants ? tripData.participants.join(', ') : ''}</div>
+                        <div className={styles.textdata}>Участников: {tripData.participants ? tripData.participants.length : ''}</div>
+                        <div className={styles.textdata}>{tripData.participants ? tripData.participants.join(', ') : ''}</div>
                         <div className={styles.textdata}>{tripData.city}</div>
                         <div className={styles.textdata}>Отель: {tripData.hotelTitle}</div>
-
+                        <div className={styles.textdata}>{tripData.dateStart} - {tripData.dateEnd}</div>
                         <div className={styles.addParticipantContainer}>
                             <Input
                                 className={styles.inputField}
@@ -404,10 +433,9 @@ const Map = () => {
                             <Button onClick={handleAddParticipant} className={styles.addButton}>ОК</Button>
                             {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
                         </div>
-
-                        <div className={styles.textdata}>Дата {tripData.dateStart} - {tripData.dateEnd}</div>
                     </div>
                 </div>
+                <div className={styles.resizeHandle} onMouseDown={handleMouseDown} />
             </div>
             <div className={styles.tableContainer}>
                 <div className={styles.block}>
@@ -436,7 +464,6 @@ const Map = () => {
                     </div>
                 </div>
             </div>
-
             <Statistics
                 teamExpensesData={teamExpensesData}
                 categoryExpensesData={categoryExpensesData}

@@ -1,50 +1,58 @@
-/* Card.module.css */
-
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400&display=swap');
 
 .card {
-    width: 50%;
-    height: 350px;
-    margin: 10px;
-    padding: 20px;
+    width: 100%; /* Полная ширина ячейки сетки */
+    max-width: 300px; /* Максимальная ширина карточки для центрирования */
+    height: 270px;
+    padding: 10px;
     background-color: #888e97;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     text-align: left;
-    font-family: 'Montserrat', sans-serif; /* Применяем шрифт Montserrat */
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Пространство между элементами */
+}
+
+.cardContent {
+    flex: 1;
+}
+
+.cardFooter {
+    display: flex;
+    justify-content: space-between; /* Распределить элементы по сторонам */
+    align-items: flex-end;
+    margin-top: 10px; /* Добавляем отступ сверху */
 }
 
 .deleteButton {
     cursor: pointer;
-    display: inline-block;
-    background-color: red; /* Зеленый цвет */
+    background-color: red;
     color: white;
     font-size: 12px;
     padding: 4px 8px;
     border-radius: 16px;
-    margin-top: 10px;
-    z-index: 1;
 }
+
 .deleteButton:hover {
     color: #470100;
 }
 
 .card h2 {
     margin-bottom: 10px;
-    font-weight: 300; /* Тонкий шрифт */
+    font-weight: 300;
 }
 
 .card p {
     color: #f8f8f8;
-    font-weight: 300; /* Тонкий шрифт */
+    font-weight: 300;
 }
 
 .authorChip {
-    display: inline-block;
-    background-color: #4caf50; /* Зеленый цвет */
+    background-color: #4caf50;
     color: white;
     font-size: 12px;
     padding: 4px 8px;
     border-radius: 16px;
-    margin-top: 10px;
 }

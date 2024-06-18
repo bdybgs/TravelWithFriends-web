@@ -8,5 +8,5 @@ declare global {
 
 export const sendEvent = (action: string, target: string) => {
     const id = 97428533; 
-    window.ym(id, action, target);
+    // window.ym(id, action, target);
 };

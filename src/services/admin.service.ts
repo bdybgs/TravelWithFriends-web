@@ -2,8 +2,12 @@ import axios from "axios";
 //
 // const API_URL_ALL_TRIPS = "http://localhost:8080/v1/Trip";
 // const API_URL_DELETETRIP = "http://localhost:8080/v1/Trip";
+//const API_URL_DELETEUSER = "http://localhost:8080/v1/Accounts";
+//const API_URL_GETUSERTRIPS = "http://localhost:8080/v1/Trip/usertrips";
 const API_URL_ALL_TRIPS = "http://localhost:10000/v1/Trip";
 const API_URL_DELETETRIP = "http://localhost:10000/v1/Trip";
+const API_URL_DELETEUSER = "http://localhost:10000/v1/Accounts";
+const API_URL_GETUSERTRIPS = "http://localhost:10000/v1/Trip/usertrips";
 
 //const API_URL_TRIPS = "https://localhost:7084/v1/Trip/publicated";
 
@@ -70,4 +74,43 @@ export const deleteTrip = (id: any) => {
             console.error("Ошибка при удалении путешествия:", error);
             throw error;
         });
+};
+
+
+export const deleteUser = (email: string) => {
+    const user = localStorage.getItem("user");
+    const accessToken = user ? JSON.parse(user).accessToken : null;
+
+    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+
+    const deleteUrl = `${API_URL_DELETEUSER}/${email}`;
+
+    return axios.delete(deleteUrl, { headers })
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.error("Ошибка при удалении пользователя:", error);
+            throw error;
+        });
+};
+
+export const getUserTrips = (email: string) => {
+    const user = localStorage.getItem("user");
+    const accessToken = user ? JSON.parse(user).accessToken : null;
+
+    const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+
+    const url = `${API_URL_GETUSERTRIPS}/${email}`;
+
+    return axios.get(url, { headers })
+    .then((response) => {
+        return response.data;
+    })
+    .catch((error) => {
+        console.error("Ошибка при получении списка  путешествий пользователя:", error);
+        throw error;
+    });
+
+   
 };
