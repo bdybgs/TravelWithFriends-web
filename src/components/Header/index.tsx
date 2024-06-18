@@ -18,6 +18,8 @@ const Header = () => {
         }
     };
 
+    console.log(auth?.user)
+
     return (
         <header className={styles.primary}>
             <Link to="/">
@@ -27,7 +29,7 @@ const Header = () => {
                 <ul>
                     <Link to="/publicatedtrips">Путешествия</Link>
                     <Link to="/about">Контакты</Link>
-                    {auth?.user ? (
+                    {auth?.user?.name  ? (
                         <>
                             <Link to="/profile">Профиль</Link>
                             <Link to="/profile" state={{ openCreatePopup: true }}>
